@@ -1,0 +1,45 @@
+package com.aurora.drivesyncer.entity;
+
+public class Configuration {
+        private String url, username, password, localPath, remotePath;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public String getRemotePath() {
+        return remotePath;
+    }
+
+    public void setRemotePath(String remotePath) {
+        this.remotePath = remotePath;
+    }
+}

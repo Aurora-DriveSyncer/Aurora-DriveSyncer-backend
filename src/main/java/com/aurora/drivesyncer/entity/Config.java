@@ -1,7 +1,11 @@
 package com.aurora.drivesyncer.entity;
 
-public class Configuration {
-        private String url, username, password, localPath, remotePath;
+public class Config {
+    private String url;
+    private String username;
+    private String password;
+    private String localPath;
+    private String remotePath;
 
     public String getUrl() {
         return url;

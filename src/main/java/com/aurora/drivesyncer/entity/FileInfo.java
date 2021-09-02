@@ -1,8 +1,11 @@
 package com.aurora.drivesyncer.entity;
 
-import com.aurora.drivesyncer.utils.SyncStatus;
-
 public class FileInfo {
+    public enum SyncStatus
+    {
+        Waiting, Syncing, Synced
+    }
+
     private String filename;
     private String path;
     private String creationTime;

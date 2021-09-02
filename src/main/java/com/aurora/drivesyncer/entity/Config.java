@@ -5,7 +5,7 @@ public class Config {
     private String username;
     private String password;
     private String localPath;
-    private String remotePath;
+    private String filePassword;
 
     public String getUrl() {
         return url;
@@ -39,11 +39,11 @@ public class Config {
         this.localPath = localPath;
     }
 
-    public String getRemotePath() {
-        return remotePath;
+    public String getFilePassword() {
+        return filePassword;
     }
 
-    public void setRemotePath(String remotePath) {
-        this.remotePath = remotePath;
+    public void setFilePassword(String filePassword) {
+        this.filePassword = filePassword;
     }
 }

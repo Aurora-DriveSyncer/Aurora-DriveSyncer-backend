@@ -1,5 +1,8 @@
 package com.aurora.drivesyncer.entity;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class FileInfo {
     public enum SyncStatus
     {

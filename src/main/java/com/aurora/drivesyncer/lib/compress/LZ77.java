@@ -4,12 +4,12 @@ import java.io.File;
 
 public class LZ77 implements Compressor {
     @Override
-    public void compress(File input, File output) {
-
+    public File compress(File origin) {
+        return origin;
     }
 
     @Override
-    public void decompress(File input, File output) {
-
+    public File extract(File archive) {
+        return archive;
     }
 }

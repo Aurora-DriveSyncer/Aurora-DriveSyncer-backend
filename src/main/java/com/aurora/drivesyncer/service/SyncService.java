@@ -1,11 +1,17 @@
 package com.aurora.drivesyncer.service;
 
+import com.aurora.drivesyncer.mapper.FileInfoMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
 public class SyncService {
+    @Autowired
+    private FileInfoMapper fileInfoMapper;
+
+
     void initialize() {
         // 清理数据库
         // 尝试连接

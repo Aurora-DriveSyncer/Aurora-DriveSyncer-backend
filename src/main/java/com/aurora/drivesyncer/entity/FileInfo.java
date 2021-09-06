@@ -2,13 +2,13 @@ package com.aurora.drivesyncer.entity;
 
 import org.springframework.stereotype.Repository;
 
-@Repository
 public class FileInfo {
     public enum SyncStatus
     {
         Waiting, Syncing, Synced
     }
 
+    private Integer id;
     private String filename;
     private String path;
     private String creationTime;

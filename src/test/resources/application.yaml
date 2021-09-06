@@ -1,0 +1,7 @@
+server:
+  port: 18080
+spring:
+  datasource:
+    url: jdbc:hsqldb:mem:mymemdb
+    username: SA
+    password:

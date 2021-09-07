@@ -1,0 +1,39 @@
+name: Deploy Backend
+on:
+  push:
+    branches:
+      - 'master'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 16
+
+      - name: Generate Jar
+        run: mvn clean install
+
+      - name: Setup SSH env
+        env:
+          ACTION_DEPLOY_KEY: ${{ secrets.ACTION_DEPLOY_KEY }}
+        run: |
+          # set up private key for deploy
+          mkdir -p ~/.ssh/
+          echo "$ACTION_DEPLOY_KEY" | tr -d '\r' > ~/.ssh/id_rsa # 配置秘钥
+          chmod 600 ~/.ssh/id_rsa
+          # ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-keyscan lyh543.cn >> ~/.ssh/known_hosts
+          # set git infomation
+          # git config --global user.name 'lyh543' # 换成你自己的邮箱和名字
+          # git config --global user.email 'lyh543@outlook.com'
+
+      - name: Send 🚀 To Server
+        run: |
+          scp target/*.jar lyh543@lyh543.cn:/etc/caddy/html/aurora-drive-syncer/backend/Aurora-DriveSyncer.jar
+      - name: Restart Tomcat Server
+        run: |
+          ssh lyh543@lyh543.cn pm2 restart aurora-backend

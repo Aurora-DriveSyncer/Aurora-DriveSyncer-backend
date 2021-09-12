@@ -12,7 +12,7 @@ import java.io.IOException;
 @RequestMapping(path = "/api/config/")
 public class ConfigController {
     @Autowired
-    ConfigService configService;
+    private ConfigService configService;
 
     @GetMapping
     public Config getConfig() {

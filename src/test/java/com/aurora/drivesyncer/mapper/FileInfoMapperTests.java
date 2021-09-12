@@ -44,7 +44,7 @@ public class FileInfoMapperTests {
     }
 
     @Test
-    void updateFirstWaitingFileToSyncing() {
+    void testUpdateFirstWaitingFileToSyncing() {
         // 只有 c.txt 是等待更新
         insertFileInfo("/", "a.txt", SyncStatus.Syncing);
         insertFileInfo("/", "b.txt", SyncStatus.Syncing);
@@ -64,6 +64,34 @@ public class FileInfoMapperTests {
         fileInfo = fileInfoMapper.updateFirstWaitingFileToSyncing();
         assertNull(fileInfo);
         assertEquals(3, fileInfoMapper.selectCount(queryWrapper));
+    }
+
+    @Test
+    void testSelectSyncingFile() {
+        insertFileInfo("/", "a.txt", SyncStatus.Syncing);
+        insertFileInfo("/", "b.txt", SyncStatus.Syncing);
+        insertFileInfo("/path/", "c.txt", SyncStatus.Waiting);
+
+        // 有 2 个 Syncing
+        List<FileInfo> fileInfoList = fileInfoMapper.selectSyncingFile();
+        assertEquals(2, fileInfoList.size());
+        assertEquals("a.txt", fileInfoList.get(0).getFilename());
+        assertEquals("b.txt", fileInfoList.get(1).getFilename());
+
+        // 更新 1 个为 Synced
+        FileInfo fileInfoA = fileInfoList.get(0);
+        fileInfoA.setStatus(SyncStatus.Synced);
+        fileInfoMapper.updateById(fileInfoA);
+        fileInfoList = fileInfoMapper.selectSyncingFile();
+        assertEquals(1, fileInfoList.size());
+        assertEquals("b.txt", fileInfoList.get(0).getFilename());
+
+        // 更新另一个为 Waiting
+        FileInfo fileInfoB = fileInfoList.get(1);
+        fileInfoB.setStatus(SyncStatus.Waiting);
+        fileInfoMapper.updateById(fileInfoA);
+        fileInfoList = fileInfoMapper.selectSyncingFile();
+        assertEquals(0, fileInfoList.size());
     }
 
     @AfterEach

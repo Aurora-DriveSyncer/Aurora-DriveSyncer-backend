@@ -7,9 +7,11 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface FileInfoMapper extends BaseMapper<FileInfo> {
-    @Select("SELECT * from file_info WHERE status = 'Waiting' ORDER BY path, filename LIMIT 1")
+    @Select("SELECT * FROM file_info WHERE status = 'Waiting' ORDER BY path, filename LIMIT 1")
     FileInfo selectFirstWaitingFile();
 
     default FileInfo updateFirstWaitingFileToSyncing() {
@@ -20,4 +22,7 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
         this.updateById(fileInfo);
         return fileInfo;
     }
+
+    @Select("SELECT * FROM file_info WHERE status = 'Syncing' ORDER BY path, filename")
+    List<FileInfo> selectSyncingFile();
 }

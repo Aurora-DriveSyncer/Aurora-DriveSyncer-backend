@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS file_info (
   is_directory INT,
   size INT,
   hash VARCHAR(64),
-  status VARCHAR(20)
+  status VARCHAR(20),
+  version INT,
 );
 
 CREATE INDEX file_info_path_filename

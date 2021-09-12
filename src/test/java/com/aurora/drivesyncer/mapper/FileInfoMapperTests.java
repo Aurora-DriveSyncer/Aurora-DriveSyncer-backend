@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.File;
+import java.util.List;
 
 import static org.springframework.test.jdbc.JdbcTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,18 +45,25 @@ public class FileInfoMapperTests {
 
     @Test
     void updateFirstWaitingFileToSyncing() {
+        // 只有 c.txt 是等待更新
         insertFileInfo("/", "a.txt", SyncStatus.Syncing);
         insertFileInfo("/", "b.txt", SyncStatus.Syncing);
         insertFileInfo("/path/", "c.txt", SyncStatus.Waiting);
 
-        assertEquals(3, fileInfoMapper.selectCount(null));
+        QueryWrapper<FileInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", SyncStatus.Syncing);
+        assertEquals(2, fileInfoMapper.selectCount(queryWrapper));
 
-        Integer cId = fileInfoMapper.updateFirstWaitingFileToSyncing();
-        FileInfo cInfo = fileInfoMapper.selectById(cId);
-//        assertEquals("c.txt", cInfo.getFilename());
-//
-//        cId = fileInfoMapper.updateFirstWaitingFileToSyncing();
-//        assertNull(cId);
+        // 更新并返回 c.txt
+        FileInfo fileInfo = fileInfoMapper.updateFirstWaitingFileToSyncing();
+        assertNotNull(fileInfo);
+        assertEquals("c.txt", fileInfo.getFilename());
+        assertEquals(3, fileInfoMapper.selectCount(queryWrapper));
+
+        // 没有发生更新
+        fileInfo = fileInfoMapper.updateFirstWaitingFileToSyncing();
+        assertNull(fileInfo);
+        assertEquals(3, fileInfoMapper.selectCount(queryWrapper));
     }
 
     @AfterEach

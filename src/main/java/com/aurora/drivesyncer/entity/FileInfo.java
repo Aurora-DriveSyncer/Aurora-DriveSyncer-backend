@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.entity;
 
-import org.springframework.stereotype.Repository;
+import com.baomidou.mybatisplus.annotation.Version;
 
 public class FileInfo {
     public enum SyncStatus
@@ -18,6 +18,16 @@ public class FileInfo {
     private Integer size;
     private String hash;
     private SyncStatus status;
+    @Version
+    private Integer version;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getFilename() {
         return filename;
@@ -25,6 +35,14 @@ public class FileInfo {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getCreationTime() {
@@ -83,11 +101,11 @@ public class FileInfo {
         this.status = status;
     }
 
-    public String getPath() {
-        return path;
+    public Integer getVersion() {
+        return version;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

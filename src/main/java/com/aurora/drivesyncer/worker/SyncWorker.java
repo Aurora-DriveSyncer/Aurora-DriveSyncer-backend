@@ -18,6 +18,7 @@ public class SyncWorker implements Runnable {
         this.fileInfoMapper = fileInfoMapper;
     }
 
+    @Override
     public void run() {
 //        int id = fileInfoMapper.selectFirstWaitingFile();
     }

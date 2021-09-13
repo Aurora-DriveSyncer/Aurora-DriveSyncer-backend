@@ -17,8 +17,9 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
 
     default FileInfo updateFirstWaitingFileToSyncing() {
         FileInfo fileInfo = this.selectFirstWaitingFile();
-        if (fileInfo == null)
+        if (fileInfo == null) {
             return null;
+        }
         fileInfo.setStatus(FileInfo.SyncStatus.Syncing);
         this.updateById(fileInfo);
         return fileInfo;

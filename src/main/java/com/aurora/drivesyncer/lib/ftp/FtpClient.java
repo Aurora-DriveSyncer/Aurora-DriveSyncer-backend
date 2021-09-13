@@ -39,6 +39,7 @@ class FtpClient implements Closeable {
         ftp.login(user, password);
     }
 
+    @Override
     public void close() throws IOException {
         ftp.disconnect();
     }

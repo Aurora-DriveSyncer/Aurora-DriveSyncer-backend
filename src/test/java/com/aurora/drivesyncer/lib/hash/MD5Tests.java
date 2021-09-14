@@ -1,0 +1,51 @@
+package com.aurora.drivesyncer.lib.hash;
+
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MD5Tests {
+    @Test
+    public void testMD5OnString() {
+        String str = "qwertuiop[]\\;'.,/1";
+        // echo -n "qwertuiop[]\\;'.,/1" | md5sum
+        String md5result = "4256e6c8f2a73fbb508d637ede0c687d";
+        Hash springMd5 = new SpringMD5();
+        assertEquals(md5result, springMd5.hash(str));
+    }
+
+    @Test
+    public void testMD5OnEmptyString() {
+        String str = "";
+        // echo -n "" | md5sum
+        String md5result = "d41d8cd98f00b204e9800998ecf8427e";
+        Hash springMd5 = new SpringMD5();
+        assertEquals(md5result, springMd5.hash(str));
+    }
+
+    @Test
+    public void testMD5OnFile() throws IOException {
+        File file = new File("src/main/resources/application.yaml");
+        Hash springMd5 = new SpringMD5();
+        assertNotNull(springMd5.hash(file));
+    }
+
+    @Test
+    public void testMD5OnEmptyFile() throws IOException {
+        String path = "./java-test-empty-file";
+        // echo -n "" | md5sum
+        String md5result = "d41d8cd98f00b204e9800998ecf8427e";
+        File file = new File(path);
+        if (!file.createNewFile()) {
+            throw new IOException();
+        }
+        Hash springMd5 = new SpringMD5();
+        assertEquals(md5result, springMd5.hash(file));
+        if (!file.delete()) {
+            throw new IOException();
+        }
+    }
+}

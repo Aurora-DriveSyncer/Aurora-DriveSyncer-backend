@@ -1,0 +1,19 @@
+package com.aurora.drivesyncer.lib.hash;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+public interface Hash {
+    String hash(byte[] bytes);
+
+    default String hash(String str) {
+        return hash(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    default String hash(File file) throws IOException {
+        return hash(FileUtils.readFileToByteArray(file));
+    }
+}

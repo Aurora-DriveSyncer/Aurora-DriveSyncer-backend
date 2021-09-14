@@ -79,7 +79,7 @@ public class FileInfoMapperTests {
         assertEquals("b.txt", fileInfoList.get(1).getFilename());
 
         // 更新 1 个为 Synced
-        FileInfo fileInfoA = fileInfoList.get(0);
+        FileInfo fileInfoA = fileInfoList.get(0), fileInfoB = fileInfoList.get(1);
         fileInfoA.setStatus(SyncStatus.Synced);
         fileInfoMapper.updateById(fileInfoA);
         fileInfoList = fileInfoMapper.selectSyncingFile();
@@ -87,9 +87,8 @@ public class FileInfoMapperTests {
         assertEquals("b.txt", fileInfoList.get(0).getFilename());
 
         // 更新另一个为 Waiting
-        FileInfo fileInfoB = fileInfoList.get(1);
         fileInfoB.setStatus(SyncStatus.Waiting);
-        fileInfoMapper.updateById(fileInfoA);
+        fileInfoMapper.updateById(fileInfoB);
         fileInfoList = fileInfoMapper.selectSyncingFile();
         assertEquals(0, fileInfoList.size());
     }

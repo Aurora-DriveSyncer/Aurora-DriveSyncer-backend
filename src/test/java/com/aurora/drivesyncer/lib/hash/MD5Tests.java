@@ -29,21 +29,17 @@ public class MD5Tests extends FileTests {
     }
 
     @Test
-    public void testMD5OnFile() throws IOException {
-        File file = new File("src/main/resources/application.yaml");
+    public void testMD5OnTextFile() throws IOException {
+        File file = readSampleTextFile();
         Hash springMd5 = new SpringMD5();
         assertNotNull(springMd5.hash(file));
     }
 
     @Test
     public void testMD5OnEmptyFile() throws IOException {
-        String path = testDirectory + "/java-test-empty-file";
         // echo -n "" | md5sum
         String md5result = "d41d8cd98f00b204e9800998ecf8427e";
-        File file = new File(path);
-        if (!file.exists() && !file.createNewFile()) {
-            throw new IOException();
-        }
+        File file = createTempEmptyFile();
         Hash springMd5 = new SpringMD5();
         assertEquals(md5result, springMd5.hash(file));
     }

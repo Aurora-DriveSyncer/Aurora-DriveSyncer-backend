@@ -2,7 +2,10 @@ package com.aurora.drivesyncer.lib.compress;
 
 import java.io.*;
 
-public class Huffman implements Compressor {
+public class HuffmanCompressor implements Compressor {
+    static final int HUFFMAN_LENGTH = 8;
+    static final int HUFFMAN_SIZE = 1 << HUFFMAN_LENGTH;
+
     @Override
     public File compress(File origin, String archivePath) throws IOException {
         File archive = new File(archivePath);
@@ -11,7 +14,7 @@ public class Huffman implements Compressor {
         }
         try (FileInputStream originInputStream = new FileInputStream(origin);
              FileOutputStream archiveOutputStream = new FileOutputStream(archive)) {
-            int[] byteCount = new int[256];
+            int[] byteCount = new int[HUFFMAN_SIZE];
             int c;
             // 第一遍读入 origin，统计频次
             while ((c = originInputStream.read()) != -1) {
@@ -39,6 +42,6 @@ public class Huffman implements Compressor {
     }
 
     private void buildHuffmanTree(int[] byteCount) {
-
+//        for int
     }
 }

@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.compress;
+package com.aurora.drivesyncer.lib.encrypt;
 
 import com.aurora.drivesyncer.utils.FileTests;
 import org.apache.commons.io.FileUtils;
@@ -12,24 +12,24 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HuffmanTests extends FileTests {
-    public void testHuffmanOnFile(File origin) throws IOException {
-//        final String archivePath = testDirectory + "/archive", extractPath = testDirectory + "/extract";
-//        Compressor compressor = new Huffman();
-//        File archive = compressor.compress(origin, archivePath);
-//        File extract = compressor.extract(archive, extractPath);
-//        System.out.printf("Huffman Compress: %s -> %s\n", humanReadableSize(archive), humanReadableSize(extract));
-//        assertTrue(FileUtils.contentEquals(origin, extract));
+public class AuroraEncryptorTests extends FileTests {
+    public void testAuroraEncryptorOnFile(File origin, String passphrase) throws IOException {
+        final String encryptedPath = testDirectory + "/encrypted", decryptedPath = testDirectory + "/decrypted";
+        Encrpytor encrpytor = new AuroraEncryptor(passphrase);
+        File encrypted = encrpytor.encrypt(origin, encryptedPath);
+        File decrypted = encrpytor.decrypt(encrypted, decryptedPath);
+        assertTrue(FileUtils.contentEquals(origin, decrypted));
     }
 
     @Test
-    public void testHuffmanOnTextFile() throws IOException {
+    public void testAuroraEncryptorOnTextFile() throws IOException {
         File file = new File("src/main/resources/application.yaml");
-        testHuffmanOnFile(file);
+        String passphrase = "aurora-drivesyncer";
+        testAuroraEncryptorOnFile(file, passphrase);
     }
 
     @Test
-    public void testHuffmanOn1mbTextFile() throws IOException {
+    public void testAuroraEncryptorOn1mbTextFile() throws IOException {
         String path = testDirectory + "/java-test-1mb-file";
         int size = 1024 * 1024;
         int lower = 'a';
@@ -44,11 +44,12 @@ public class HuffmanTests extends FileTests {
                     .chars()
                     .forEachOrdered(printWriter::print);
         }
-        testHuffmanOnFile(file);
+        String passphrase = "aurora-drivesyncer";
+        testAuroraEncryptorOnFile(file, passphrase);
     }
 
     @Test
-    public void testHuffmanOn1mbBinaryFile() throws IOException {
+    public void testAuroraEncryptorOn1mbBinaryFile() throws IOException {
         String path = testDirectory + "/java-test-1mb-file";
         int size = 1024 * 1024;
         byte[] bytes = new byte[size];
@@ -57,26 +58,29 @@ public class HuffmanTests extends FileTests {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(bytes);
         }
-        testHuffmanOnFile(file);
+        String passphrase = "aurora-drivesyncer";
+        testAuroraEncryptorOnFile(file, passphrase);
     }
 
     @Test
-    public void testHuffmanOnEmptyFile() throws IOException {
+    public void testAuroraEncryptorOnEmptyFile() throws IOException {
         String path = testDirectory + "/java-test-empty-file";
         File file = new File(path);
         if (!file.exists() && !file.createNewFile()) {
             throw new IOException();
         }
-        testHuffmanOnFile(file);
+        String passphrase = "aurora-drivesyncer";
+        testAuroraEncryptorOnFile(file, passphrase);
     }
 
     @Test
-    public void testHuffmanOn1bFile() throws IOException {
+    public void testAuroraEncryptorOn1bFile() throws IOException {
         String path = testDirectory + "/java-test-1b-file";
         File file = new File(path);
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write('a');
         }
-        testHuffmanOnFile(file);
+        String passphrase = "aurora-drivesyncer";
+        testAuroraEncryptorOnFile(file, passphrase);
     }
 }

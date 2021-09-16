@@ -2,9 +2,10 @@ package com.aurora.drivesyncer.lib.file.encrypt;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public interface Encrpytor {
-    public File encrypt(File origin, String encryptedPath) throws IOException;
+    public InputStream encrypt(InputStream originInputStream) throws IOException;
 
-    public File decrypt(File encrypted, String decryptedPath) throws IOException;
+    public InputStream decrypt(InputStream encryptedInputStream) throws IOException;
 }

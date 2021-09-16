@@ -1,16 +1,13 @@
 package com.aurora.drivesyncer.lib.file.compress;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class HuffmanCompressor implements Compressor {
     static final int HUFFMAN_LENGTH = 8;
     static final int HUFFMAN_SIZE = 1 << HUFFMAN_LENGTH;
 
     @Override
-    public File compress(File origin, String archivePath) throws IOException {
+    public InputStream compress(InputStream originInputStream) throws IOException {
         File archive = new File(archivePath);
         if (!archive.exists() && !archive.createNewFile()) {
             throw new IOException();
@@ -26,7 +23,7 @@ public class HuffmanCompressor implements Compressor {
     }
 
     @Override
-    public File extract(File archive, String extractPath) throws IOException {
+    public InputStream extract(InputStream archiveInputStream) throws IOException {
         File extract = new File(extractPath);
         if (!extract.exists() && !extract.createNewFile()) {
             throw new IOException();

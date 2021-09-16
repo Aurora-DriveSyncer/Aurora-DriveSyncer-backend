@@ -1,9 +1,6 @@
 package com.aurora.drivesyncer.lib.file.encrypt;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class AuroraEncryptor implements Encrpytor {
     private final String passphrase;
@@ -13,7 +10,7 @@ public class AuroraEncryptor implements Encrpytor {
     }
 
     @Override
-    public File encrypt(File origin, String encryptedPath) throws IOException {
+    public InputStream encrypt(InputStream originInputStream) throws IOException {
         File encrypted = new File(encryptedPath);
         if (!encrypted.exists() && !encrypted.createNewFile()) {
             throw new IOException();
@@ -29,7 +26,7 @@ public class AuroraEncryptor implements Encrpytor {
     }
 
     @Override
-    public File decrypt(File encrypted, String decryptedPath) throws IOException {
+    public InputStream decrypt(InputStream encryptedInputStream) throws IOException {
         File decrypted = new File(decryptedPath);
         if (!decrypted.exists() && !decrypted.createNewFile()) {
             throw new IOException();

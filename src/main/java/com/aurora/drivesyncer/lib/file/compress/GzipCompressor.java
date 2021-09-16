@@ -1,15 +1,12 @@
 package com.aurora.drivesyncer.lib.file.compress;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class GzipCompressor implements Compressor {
     @Override
-    public File compress(File origin, String archivePath) throws IOException {
+    public InputStream compress(InputStream originInputStream) throws IOException {
         File archive = new File(archivePath);
         try (FileInputStream fileInputStream = new FileInputStream(origin);
              FileOutputStream fileOutputStream = new FileOutputStream(archive);
@@ -24,17 +21,7 @@ public class GzipCompressor implements Compressor {
     }
 
     @Override
-    public File extract(File archive, String extractPath) throws IOException {
-        File extract = new File(extractPath);
-        try (FileInputStream fileInputStream = new FileInputStream(archive);
-             GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);
-             FileOutputStream fileOutputStream = new FileOutputStream(extract)) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gzipInputStream.read(buffer)) != -1) {
-                fileOutputStream.write(buffer, 0, len);
-            }
-        }
-        return extract;
+    public InputStream extract(InputStream archiveInputStream) throws IOException {
+        return new GZIPInputStream(archiveInputStream);
     }
 }

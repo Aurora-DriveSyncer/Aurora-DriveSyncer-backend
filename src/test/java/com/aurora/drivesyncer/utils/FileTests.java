@@ -32,7 +32,7 @@ public class FileTests {
     public static String humanReadableSize(long size) {
         double value = size;
         CharacterIterator ci = new StringCharacterIterator(" KMGTPE");
-        while (value >= 1000){
+        while (value >= 1000) {
             value /= 1024;
             ci.next();
         }
@@ -57,20 +57,18 @@ public class FileTests {
 
     // 读取 src/main/resources/application.yaml 用以测试
     public static File readSampleTextFile() {
-        return new File("src/main/resources/application.yaml");
+        return new File("pom.xml");
     }
 
     // 创建一个随机文本文件
-    public static File createTempTextFile(int size) throws IOException {
-        String path = testDirectory + "/java-test-1mb-file";
-        int lower = 'a';
-        int upper = 'z';
+    public static File createTempTextFile(int size, char lower, char upper) throws IOException {
+        String path = String.format("%s/java-test-random-from%c-to-%c-file", testDirectory, lower, upper);
 
         File file = new File(path);
-            StringBuilder sb = new Random()
-                    .ints(lower, upper + 1)
-                    .limit(size)
-                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append);
+        StringBuilder sb = new Random()
+                .ints(lower, upper + 1)
+                .limit(size)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append);
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.print(sb);
         }
@@ -79,7 +77,7 @@ public class FileTests {
 
     // 创建一个随机二进制文件
     public static File createTempBinaryFile(int size) throws IOException {
-        String path = testDirectory + "/java-test-1mb-file";
+        String path = testDirectory + "/java-test-random-binary-file";
         byte[] bytes = new byte[size];
         new Random().nextBytes(bytes);
         File file = new File(path);

@@ -27,7 +27,7 @@ public class AuroraEncryptorTests extends FileTests {
 
     @Test
     public void testAuroraEncryptorOn1mbTextFile() throws IOException {
-        File file = createTempTextFile(1024 * 1024);
+        File file = createTempTextFile(1024 * 1024, 'a', 'z');
         String passphrase = "aurora-drivesyncer";
         testAuroraEncryptorOnFile(file, passphrase);
     }

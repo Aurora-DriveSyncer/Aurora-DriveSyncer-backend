@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.encrypt;
+package com.aurora.drivesyncer.lib.file.encrypt;
 
 import java.io.File;
 import java.io.IOException;

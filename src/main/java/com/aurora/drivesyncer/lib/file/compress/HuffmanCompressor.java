@@ -1,10 +1,9 @@
-package com.aurora.drivesyncer.lib.compress;
+package com.aurora.drivesyncer.lib.file.compress;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map;
 
 public class HuffmanCompressor implements Compressor {
     static final int HUFFMAN_LENGTH = 8;

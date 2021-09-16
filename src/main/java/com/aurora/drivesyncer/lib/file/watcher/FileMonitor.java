@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.watcher;
+package com.aurora.drivesyncer.lib.file.watcher;
 
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;

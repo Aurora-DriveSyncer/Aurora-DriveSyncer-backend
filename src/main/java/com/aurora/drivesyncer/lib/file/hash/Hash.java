@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.hash;
+package com.aurora.drivesyncer.lib.file.hash;
 
 import org.apache.commons.io.FileUtils;
 

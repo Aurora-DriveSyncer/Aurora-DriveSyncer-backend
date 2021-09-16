@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.watcher;
+package com.aurora.drivesyncer.lib.file.watcher;
 
 import java.io.File;
 

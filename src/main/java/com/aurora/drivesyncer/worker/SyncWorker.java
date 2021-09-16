@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 public class SyncWorker implements Runnable {
+    // 扫描数据库的间隔
+    final int WATCH_LOOP = 5;
+    final FileInfoMapper fileInfoMapper;
+    final Config config;
+    Thread t;
 
-    private FileInfoMapper fileInfoMapper;
-    private Config config;
-    private Thread t;
 
     SyncWorker(Config config, FileInfoMapper fileInfoMapper) {
         this.config = config;

@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.encrypt;
+package com.aurora.drivesyncer.lib.file.encrypt;
 
 import com.aurora.drivesyncer.utils.FileTests;
 import org.apache.commons.io.FileUtils;

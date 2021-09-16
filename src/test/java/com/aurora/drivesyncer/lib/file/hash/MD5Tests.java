@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.hash;
+package com.aurora.drivesyncer.lib.file.hash;
 
 import com.aurora.drivesyncer.utils.FileTests;
 import org.junit.jupiter.api.Test;

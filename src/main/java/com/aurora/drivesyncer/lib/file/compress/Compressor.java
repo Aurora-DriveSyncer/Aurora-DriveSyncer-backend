@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.compress;
+package com.aurora.drivesyncer.lib.file.compress;
 
 import java.io.File;
 import java.io.IOException;

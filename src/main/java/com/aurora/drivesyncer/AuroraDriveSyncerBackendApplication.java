@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer;
 
-import com.aurora.drivesyncer.lib.watcher.FileMonitor;
+import com.aurora.drivesyncer.lib.file.watcher.FileMonitor;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import org.mybatis.spring.annotation.MapperScan;

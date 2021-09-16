@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.hash;
+package com.aurora.drivesyncer.lib.file.hash;
 
 import org.springframework.util.DigestUtils;
 

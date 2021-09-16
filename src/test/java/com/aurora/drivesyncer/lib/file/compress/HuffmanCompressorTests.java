@@ -1,4 +1,4 @@
-//package com.aurora.drivesyncer.lib.compress;
+//package com.aurora.drivesyncer.lib.file.compress;
 //
 //import com.aurora.drivesyncer.utils.FileTests;
 //import org.apache.commons.io.FileUtils;

@@ -5,14 +5,14 @@ import com.aurora.drivesyncer.mapper.FileInfoMapper;
 
 import java.util.concurrent.BlockingQueue;
 
-// 消费者，从 waitingFileQueue 中取出等待上传的文件，然后进行上传
-public class SyncWorker implements Runnable {
+// 生产者，扫描更新的文件，加入 waitingFileQueue
+public class WatchWorker implements Runnable {
     Config config;
     FileInfoMapper fileInfoMapper;
     BlockingQueue<Integer> waitingFileQueue;
     Thread thread;
 
-    SyncWorker(Config config, FileInfoMapper fileInfoMapper, BlockingQueue<Integer> waitingFileQueue) {
+    WatchWorker(Config config, FileInfoMapper fileInfoMapper, BlockingQueue<Integer> waitingFileQueue) {
         this.config = config;
         this.fileInfoMapper = fileInfoMapper;
         this.waitingFileQueue = waitingFileQueue;
@@ -20,16 +20,7 @@ public class SyncWorker implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                // 从 waitingFileQueue 中取出等待上传的文件（阻塞操作）
-                Integer fileId = waitingFileQueue.take();
-
-
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        int id = fileInfoMapper.selectFirstWaitingFile();
     }
 
     public void start() {
@@ -38,5 +29,4 @@ public class SyncWorker implements Runnable {
             thread.start();
         }
     }
-
 }

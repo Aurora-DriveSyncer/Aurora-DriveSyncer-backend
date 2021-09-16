@@ -18,8 +18,6 @@ public class FileInfo {
     private Integer size;
     private String hash;
     private SyncStatus status;
-    @Version
-    private Integer version;
 
     public Integer getId() {
         return id;
@@ -99,13 +97,5 @@ public class FileInfo {
 
     public void setStatus(SyncStatus status) {
         this.status = status;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 }

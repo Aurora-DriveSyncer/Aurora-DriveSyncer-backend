@@ -30,4 +30,7 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
 
     @Select("SELECT * FROM file_info WHERE status = 'Syncing' ORDER BY path, filename")
     List<FileInfo> selectSyncingFile();
+
+    @Update("UPDATE file_info SET status = #{status} WHERE id = #{id}")
+    Integer updateStatusById(@Param("id") Integer id, @Param("status") FileInfo.SyncStatus status);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
 
 @Service
 public class SyncService {
@@ -13,6 +14,9 @@ public class SyncService {
     private Config config;
     @Autowired
     private FileInfoMapper fileInfoMapper;
+
+    BlockingQueue<Integer> waitingFileQueue;
+
 
 
     void initialize() throws IOException {

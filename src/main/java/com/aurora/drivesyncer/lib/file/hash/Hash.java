@@ -14,7 +14,11 @@ public interface Hash {
         return hash(str.getBytes(StandardCharsets.UTF_8));
     }
 
-    default String hash(InputStream inputStream) throws IOException {
+    default String hash(File file) throws IOException {
         return hash(FileUtils.readFileToByteArray(file));
+    }
+
+    default String hash(InputStream inputStream) throws IOException {
+        return hash(inputStream.readAllBytes());
     }
 }

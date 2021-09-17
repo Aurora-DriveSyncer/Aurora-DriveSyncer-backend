@@ -4,20 +4,17 @@ import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static com.aurora.drivesyncer.lib.stream.Parser.toInputStream;
+import static com.aurora.drivesyncer.lib.stream.Parser.toOutputStream;
+
 public class GzipCompressor implements Compressor {
     @Override
     public InputStream compress(InputStream originInputStream) throws IOException {
-        File archive = new File(archivePath);
-        try (FileInputStream fileInputStream = new FileInputStream(origin);
-             FileOutputStream fileOutputStream = new FileOutputStream(archive);
-             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream)) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = fileInputStream.read(buffer)) != -1) {
-                gzipOutputStream.write(buffer, 0, len);
-            }
-        }
-        return archive;
+            ByteArrayOutputStream compressOutputStream = new ByteArrayOutputStream();
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(compressOutputStream);
+            gzipOutputStream.write(originInputStream.readAllBytes());
+            gzipOutputStream.close();
+            return toInputStream(compressOutputStream);
     }
 
     @Override

@@ -3,12 +3,18 @@ package com.aurora.drivesyncer.lib.file.watcher;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
 
 
 public class FileMonitor {
+    Log log = LogFactory.getLog(getClass());
+
     private final String path;                                // 文件夹目录
     private final long interval;                        // 监听间隔
-    private static final long DEFAULT_INTERVAL = 1000;  // 默认监听间隔 1s
+    private static final long DEFAULT_INTERVAL = 5000;  // 默认监听间隔 5s
     private final FileAlterationListenerAdaptor listener;        // 事件处理类对象
 
     public FileMonitor(String path) {
@@ -30,16 +36,17 @@ public class FileMonitor {
     }
 
     public void start() {
-        FileAlterationObserver observer = new FileAlterationObserver(path);
-        observer.addListener(listener);
-        FileAlterationMonitor monitor = new FileAlterationMonitor(interval);
-        monitor.addObserver(observer);
-        System.out.println("add monitor");
-        try {
-            monitor.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("starting monitor");
+        FileAlterationObserver observer = new FileAlterationObserver(
+               new File(path));
+
+            observer.addListener(new FileListener());
+            FileAlterationMonitor monitor = new FileAlterationMonitor(interval,observer);
+            try {
+                log.info("Starting monitoring on " + path);
+                monitor.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
     }
 }

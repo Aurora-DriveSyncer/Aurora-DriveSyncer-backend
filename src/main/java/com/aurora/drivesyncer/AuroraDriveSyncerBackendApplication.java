@@ -12,10 +12,13 @@ import org.springframework.context.annotation.Bean;
 @MapperScan("com.aurora.drivesyncer.mapper")
 public class AuroraDriveSyncerBackendApplication {
     public static void main(String[] args) {
+
         SpringApplication.run(AuroraDriveSyncerBackendApplication.class, args);
 
-        FileMonitor fileMonitor = new FileMonitor("~");
+
+        FileMonitor fileMonitor = new FileMonitor("E:\\watched\\");
         fileMonitor.start();
+
     }
 
 }

@@ -1,6 +1,8 @@
 package com.aurora.drivesyncer.lib.file.compress;
 
 import com.aurora.drivesyncer.utils.FileTests;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -11,6 +13,7 @@ public class CompressorTests extends FileTests {
     static public final Compressor[] compressors = new Compressor[]{
             new GzipCompressor()
     };
+    Log log = LogFactory.getLog(getClass());
 
     public void testCompressorsOnFile(File origin) throws IOException {
         byte[] originBytes, compressedBytes, extractBytes;
@@ -26,11 +29,11 @@ public class CompressorTests extends FileTests {
                 extractBytes = extractInputStream.readAllBytes();
             }
             assertArrayEquals(originBytes, extractBytes);
-            System.out.printf("%s on %s: %s -> %s\n",
+            log.info(String.format("%s on %s: %s -> %s\n",
                     compressor.getClass().getName(),
                     origin.getName(),
                     humanReadableSize(originBytes.length),
-                    humanReadableSize(compressedBytes.length));
+                    humanReadableSize(compressedBytes.length)));
         }
     }
 

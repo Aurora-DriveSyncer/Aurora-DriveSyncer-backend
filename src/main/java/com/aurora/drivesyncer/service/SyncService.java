@@ -1,10 +1,12 @@
 package com.aurora.drivesyncer.service;
 
 import com.aurora.drivesyncer.entity.Config;
+import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
@@ -15,11 +17,12 @@ public class SyncService {
     @Autowired
     private FileInfoMapper fileInfoMapper;
 
-    BlockingQueue<Integer> waitingFileQueue;
+    BlockingQueue<Integer> fileUploadQueue;
+    BlockingQueue<String> fileDeleteQueue;
 
-
-
-    void initialize() throws IOException {
+    // 初始化同步服务
+    public void initialize() throws IOException {
+        // todo
         // 清理数据库
         fileInfoMapper.delete(null);
 
@@ -33,7 +36,9 @@ public class SyncService {
 
     }
 
-    void close() throws IOException {
+    // 清理同步服务
+    public void close() throws IOException {
+        // todo
         // 清理 SyncWorker 进程
 
         // 清理数据库
@@ -41,5 +46,18 @@ public class SyncService {
 
         // 清理 ftp 的文件
 
+    }
+
+    // 将本地文件添加至数据库和队列
+    public void addLocalFile(File file) throws IOException {
+        FileInfo fileInfo = new FileInfo(file);
+        fileInfo.setStatus(FileInfo.SyncStatus.Waiting);
+        fileInfoMapper.insert(fileInfo);
+        // todo: insert or update ?
+        fileUploadQueue.add(fileInfo.getId());
+    }
+
+    public void deleteLocalFile(File file) throws IOException {
+        fileInfoMapper.delete();
     }
 }

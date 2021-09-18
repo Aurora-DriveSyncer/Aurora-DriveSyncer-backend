@@ -1,7 +1,9 @@
 package com.aurora.drivesyncer.lib.file.watcher;
 
 import java.io.File;
+import java.io.IOException;
 
+import com.aurora.drivesyncer.service.SyncService;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.logging.Log;
@@ -10,7 +12,12 @@ import org.apache.commons.logging.LogFactory;
 
 public class FileListener extends FileAlterationListenerAdaptor {
     Log log = LogFactory.getLog(getClass());
-    
+    SyncService syncService;
+
+    public FileListener(SyncService syncService) {
+        this.syncService = syncService;
+    }
+
     @Override
     public void onStart(FileAlterationObserver observer) {
         log.debug(String.format("Start scanning %s...", observer.getDirectory()));
@@ -26,12 +33,22 @@ public class FileListener extends FileAlterationListenerAdaptor {
     @Override
     public void onFileCreate(File file) {
         log.info(String.format("%s create ...", file.getPath()));
+        try {
+            syncService.addLocalFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onFileCreate(file);
     }
 
     @Override
     public void onFileChange(File file) {
         log.info(String.format("%s change...", file.getPath()));
+        try {
+            syncService.addLocalFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onFileChange(file);
     }
 

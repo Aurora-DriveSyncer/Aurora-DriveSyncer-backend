@@ -1,6 +1,7 @@
 package com.aurora.drivesyncer.lib.file.encrypt;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class AuroraEncryptor implements Encryptor {
     private final String passphrase;

@@ -1,8 +1,7 @@
 package com.aurora.drivesyncer.web;
+
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.service.ConfigService;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

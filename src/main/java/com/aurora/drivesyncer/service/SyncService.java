@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class SyncService {
@@ -17,15 +18,15 @@ public class SyncService {
     @Autowired
     private FileInfoMapper fileInfoMapper;
 
-    BlockingQueue<Integer> fileUploadQueue;
-    BlockingQueue<String> fileDeleteQueue;
+    private BlockingQueue<Integer> fileUploadQueue;
+    private BlockingQueue<String> fileDeleteQueue;
 
     // 初始化同步服务
     public void initialize() throws IOException {
         // todo
+        // 创建消息队列
+        createBlockingQueues();
         // 清理数据库
-        fileInfoMapper.delete(null);
-
         // 尝试连接
 
         // 扫描文件夹
@@ -41,23 +42,30 @@ public class SyncService {
         // todo
         // 清理 SyncWorker 进程
 
+        // 清理消息队列
+
         // 清理数据库
         fileInfoMapper.delete(null);
-
         // 清理 ftp 的文件
 
     }
 
-    // 将本地文件添加至数据库和队列
+    // 将发生了添加或更新的本地文件添加至数据库和队列
     public void addLocalFile(File file) throws IOException {
         FileInfo fileInfo = new FileInfo(file);
         fileInfo.setStatus(FileInfo.SyncStatus.Waiting);
-        fileInfoMapper.insert(fileInfo);
-        // todo: insert or update ?
+        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
         fileUploadQueue.add(fileInfo.getId());
     }
 
+    // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        fileInfoMapper.delete();
+        fileInfoMapper.deleteByPathAndName(file.getParent(), file.getName());
+        fileDeleteQueue.add(file.getPath());
+    }
+
+    public void createBlockingQueues() {
+        fileUploadQueue = new LinkedBlockingQueue<>();
+        fileDeleteQueue = new LinkedBlockingQueue<>();
     }
 }

@@ -1,6 +1,9 @@
 package com.aurora.drivesyncer.lib.stream;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Parser {
     static public ByteArrayInputStream toInputStream(ByteArrayOutputStream byteArrayOutputStream) {

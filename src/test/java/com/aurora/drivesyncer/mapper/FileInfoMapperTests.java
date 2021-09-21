@@ -78,7 +78,7 @@ public class FileInfoMapperTests {
         insertFileInfo("/path/", "c.txt", SyncStatus.Waiting);
 
         // 有 2 个 Syncing
-        List<FileInfo> fileInfoList = fileInfoMapper.selectSyncingFile();
+        List<FileInfo> fileInfoList = fileInfoMapper.selectSyncingList();
         assertEquals(2, fileInfoList.size());
         assertEquals("a.txt", fileInfoList.get(0).getFilename());
         assertEquals("b.txt", fileInfoList.get(1).getFilename());
@@ -87,44 +87,44 @@ public class FileInfoMapperTests {
         FileInfo fileInfoA = fileInfoList.get(0), fileInfoB = fileInfoList.get(1);
         fileInfoA.setStatus(SyncStatus.Synced);
         fileInfoMapper.updateById(fileInfoA);
-        fileInfoList = fileInfoMapper.selectSyncingFile();
+        fileInfoList = fileInfoMapper.selectSyncingList();
         assertEquals(1, fileInfoList.size());
         assertEquals("b.txt", fileInfoList.get(0).getFilename());
 
         // 更新另一个为 Waiting
         fileInfoB.setStatus(SyncStatus.Waiting);
         fileInfoMapper.updateById(fileInfoB);
-        fileInfoList = fileInfoMapper.selectSyncingFile();
+        fileInfoList = fileInfoMapper.selectSyncingList();
         assertEquals(0, fileInfoList.size());
     }
 
 
-    @Test
-    void testUpdateStatusById() {
-        insertFileInfo("/", "a.txt", SyncStatus.Syncing);
-        insertFileInfo("/", "b.txt", SyncStatus.Syncing);
-        insertFileInfo("/path/", "c.txt", SyncStatus.Waiting);
-
-        // 有 2 个 Syncing
-        List<FileInfo> fileInfoList = fileInfoMapper.selectSyncingFile();
-        assertEquals(2, fileInfoList.size());
-        assertEquals("a.txt", fileInfoList.get(0).getFilename());
-        assertEquals("b.txt", fileInfoList.get(1).getFilename());
-
-        Integer integer;
-
-        // 使用 updateStatusById 更新 1 个为 Synced
-        FileInfo fileInfoA = fileInfoList.get(0), fileInfoB = fileInfoList.get(1);
-        integer = fileInfoMapper.updateStatusById(fileInfoA.getId(), SyncStatus.Synced);
-        assertEquals(1, integer);
-        fileInfoA = fileInfoMapper.selectById(fileInfoA.getId());
-        assertEquals(SyncStatus.Synced, fileInfoA.getStatus());
-
-        // 使用 updateStatusById 更新另一个为 Waiting
-        fileInfoB.setStatus(SyncStatus.Waiting);
-        integer = fileInfoMapper.updateStatusById(fileInfoB.getId(), SyncStatus.Waiting);
-        assertEquals(1, integer);
-        fileInfoB = fileInfoMapper.selectById(fileInfoB.getId());
-        assertEquals(SyncStatus.Waiting, fileInfoB.getStatus());
-    }
+//    @Test
+//    void testUpdateStatusById() {
+//        insertFileInfo("/", "a.txt", SyncStatus.Syncing);
+//        insertFileInfo("/", "b.txt", SyncStatus.Syncing);
+//        insertFileInfo("/path/", "c.txt", SyncStatus.Waiting);
+//
+//        // 有 2 个 Syncing
+//        List<FileInfo> fileInfoList = fileInfoMapper.selectSyncingList();
+//        assertEquals(2, fileInfoList.size());
+//        assertEquals("a.txt", fileInfoList.get(0).getFilename());
+//        assertEquals("b.txt", fileInfoList.get(1).getFilename());
+//
+//        Integer integer;
+//
+//        // 使用 updateStatusById 更新 1 个为 Synced
+//        FileInfo fileInfoA = fileInfoList.get(0), fileInfoB = fileInfoList.get(1);
+//        integer = fileInfoMapper.updateStatusById(fileInfoA.getId(), SyncStatus.Synced);
+//        assertEquals(1, integer);
+//        fileInfoA = fileInfoMapper.selectById(fileInfoA.getId());
+//        assertEquals(SyncStatus.Synced, fileInfoA.getStatus());
+//
+//        // 使用 updateStatusById 更新另一个为 Waiting
+//        fileInfoB.setStatus(SyncStatus.Waiting);
+//        integer = fileInfoMapper.updateStatusById(fileInfoB.getId(), SyncStatus.Waiting);
+//        assertEquals(1, integer);
+//        fileInfoB = fileInfoMapper.selectById(fileInfoB.getId());
+//        assertEquals(SyncStatus.Waiting, fileInfoB.getStatus());
+//    }
 }

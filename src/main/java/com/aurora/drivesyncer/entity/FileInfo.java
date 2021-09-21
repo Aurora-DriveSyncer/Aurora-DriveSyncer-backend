@@ -9,16 +9,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import static com.aurora.drivesyncer.lib.datetime.DateTime.toLocalTime;
+
 public class FileInfo {
     public enum SyncStatus
     {
-        Waiting, Syncing, Synced
+        Waiting, // 等待同步
+        Syncing, // 同步中（包括上传和删除）
+        Synced   // 已同步
     }
+
     static public Hash hashAlgorithm = new SpringMD5();
 
+    static public BasicFileAttributes getAttribute(File file) throws IOException {
+        return Files.readAttributes(Path.of(file.getPath()), BasicFileAttributes.class);
+    }
+
     private Integer id;
+    // 文件名，不含路径
     private String filename;
+    // 相对路径，以 / 结尾
     private String path;
+    // 格式为 YYYY-MM-DD
     private String creationTime;
     private String lastAccessTime;
     private String lastModifiedTime;
@@ -34,10 +46,10 @@ public class FileInfo {
     public FileInfo(File file) throws IOException {
         this.filename = file.getName();
         this.path = file.getParent();
-        BasicFileAttributes attr = Files.readAttributes(Path.of(this.path), BasicFileAttributes.class);
-        this.creationTime = attr.creationTime().toString();
-        this.lastAccessTime = attr.lastAccessTime().toString();
-        this.lastModifiedTime = attr.lastModifiedTime().toString();
+        BasicFileAttributes attr = getAttribute(file);
+        this.creationTime = toLocalTime(attr.creationTime());
+        this.lastAccessTime = toLocalTime(attr.lastAccessTime());
+        this.lastModifiedTime = toLocalTime(attr.lastModifiedTime());
         this.isDirectory = file.isDirectory();
         this.size = file.length();
         this.hash = hashAlgorithm.hash(file);

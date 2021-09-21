@@ -16,7 +16,7 @@ import java.util.Collection;
 
 
 public class FileMonitor implements Runnable {
-    private final File path;                                // 文件夹目录
+    private final File root;                                // 文件夹目录
     private final long interval;                            // 监听间隔
     private static final long DEFAULT_INTERVAL = 5000;      // 默认监听间隔 5s
     private final FileAlterationListenerAdaptor listener;   // 事件处理类对象
@@ -33,10 +33,20 @@ public class FileMonitor implements Runnable {
     }
 
     public FileMonitor(String pathname, long interval, FileAlterationListenerAdaptor listener, SyncService syncService) {
-        this.path = new File(pathname);
+        this.root = new File(pathname);
         this.interval = interval;
         this.listener = listener;
         this.syncService = syncService;
+    }
+
+    public void start() throws IOException {
+        if (!root.exists()) {
+            throw new FileNotFoundException(root.getPath());
+        }
+        if (thread == null) {
+            thread = new Thread(this);
+        }
+        thread.start();
     }
 
     @Override
@@ -55,30 +65,20 @@ public class FileMonitor implements Runnable {
         }
     }
 
-    public void start() throws IOException {
-        if (!path.exists()) {
-            throw new FileNotFoundException(path.getCanonicalPath());
-        }
-        if (thread == null) {
-            thread = new Thread(this);
-        }
-        thread.start();
-    }
-
-    private void fullScan() throws IOException {
-        log.info("Start scanning " + path.getCanonicalPath());
-        Collection<File> files = FileUtils.listFiles(path, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+    public void fullScan() throws IOException {
+        log.info("Start scanning " + root.getPath());
+        Collection<File> files = FileUtils.listFiles(root, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file: files) {
             syncService.addLocalFile(file);
         }
-        log.info(String.format("Finish scanning %s (%d file(s) found)", path.getCanonicalPath(), files.size()));
+        log.info(String.format("Finish scanning %s (%d file(s) found)", root.getPath(), files.size()));
     }
 
-    private void addFileListener() throws Exception {
-        FileAlterationObserver observer = new FileAlterationObserver(path);
+    public void addFileListener() throws Exception {
+        FileAlterationObserver observer = new FileAlterationObserver(root);
         observer.addListener(listener);
         FileAlterationMonitor monitor = new FileAlterationMonitor(interval, observer);
         monitor.start();
-        log.info("Start listening on change from " + path.getCanonicalPath());
+        log.info("Start listening on change from " + root.getPath());
     }
 }

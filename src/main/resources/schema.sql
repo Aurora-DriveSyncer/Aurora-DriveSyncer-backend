@@ -11,5 +11,7 @@ CREATE TABLE IF NOT EXISTS file_info (
   status VARCHAR(20)
 );
 
-CREATE INDEX file_info_path_filename
+-- CREATE CONSTRAINT unique_file_info_path_filename
+-- ON file_info(path, filename);
+CREATE UNIQUE INDEX unique_index_file_info_path_filename
 ON file_info(path, filename);

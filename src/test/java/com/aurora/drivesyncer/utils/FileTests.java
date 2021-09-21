@@ -8,13 +8,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Random;
 
 public class FileTests {
-    static public final String testDirectory = ".test";
+    static public final String testDirectory = ".test/";
 
     @BeforeAll
     static public void setup() throws IOException {
@@ -43,7 +42,7 @@ public class FileTests {
 
     // 创建一个空文件并返回
     public static File createTempEmptyFile() throws IOException {
-        String path = testDirectory + "/empty-file";
+        String path = testDirectory + "empty-file";
         File file = new File(path);
         if (!file.exists() && !file.createNewFile()) {
             throw new IOException();
@@ -58,7 +57,7 @@ public class FileTests {
 
     // 创建一个随机文本文件
     public static File createTempTextFile(int size, char lower, char upper) throws IOException {
-        String path = String.format("%s/random-from-%c-to-%c-file", testDirectory, lower, upper);
+        String path = String.format("%srandom-from-%c-to-%c-file", testDirectory, lower, upper);
 
         File file = new File(path);
         StringBuilder sb = new Random()
@@ -73,7 +72,7 @@ public class FileTests {
 
     // 创建一个随机二进制文件
     public static File createTempBinaryFile(int size) throws IOException {
-        String path = testDirectory + "/random-binary-file";
+        String path = testDirectory + "random-binary-file";
         byte[] bytes = new byte[size];
         new Random().nextBytes(bytes);
         File file = new File(path);

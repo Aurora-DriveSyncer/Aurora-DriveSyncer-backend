@@ -1,11 +1,12 @@
 package com.aurora.drivesyncer.lib.file.compress;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static com.aurora.drivesyncer.lib.stream.Parser.toInputStream;
-import static com.aurora.drivesyncer.lib.stream.Parser.toOutputStream;
 
 public class GzipCompressor implements Compressor {
     @Override

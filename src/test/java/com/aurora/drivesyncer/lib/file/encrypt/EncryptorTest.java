@@ -7,7 +7,7 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class EncryptorTests extends FileTests {
+public class EncryptorTest extends FileTests {
     static public final Encryptor[] encryptors = new Encryptor[]{
             new AuroraEncryptor("aurora-drivesyncer")
     };

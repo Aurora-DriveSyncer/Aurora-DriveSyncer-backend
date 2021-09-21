@@ -2,6 +2,7 @@ package com.aurora.drivesyncer.entity;
 
 import com.aurora.drivesyncer.lib.file.hash.Hash;
 import com.aurora.drivesyncer.lib.file.hash.SpringMD5;
+import org.apache.tomcat.jni.Directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,10 +26,17 @@ public class FileInfo {
         return Files.readAttributes(Path.of(file.getPath()), BasicFileAttributes.class);
     }
 
+    static public String formatDirectory(String dir) {
+        if (!dir.endsWith("/")) {
+            dir += "/";
+        }
+        return dir;
+    }
+
     private Integer id;
     // 文件名，不含路径
     private String filename;
-    // 相对路径，以 / 结尾
+    // 相对路径，保证以 / 结尾
     private String path;
     // 格式为 YYYY-MM-DD
     private String creationTime;
@@ -45,7 +53,8 @@ public class FileInfo {
 
     public FileInfo(File file) throws IOException {
         this.filename = file.getName();
-        this.path = file.getParent();
+        //todo: how to write java constructor
+        this.setPath(file.getParent());
         BasicFileAttributes attr = getAttribute(file);
         this.creationTime = toLocalTime(attr.creationTime());
         this.lastAccessTime = toLocalTime(attr.lastAccessTime());
@@ -76,7 +85,7 @@ public class FileInfo {
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.path = formatDirectory(path);
     }
 
     public String getCreationTime() {

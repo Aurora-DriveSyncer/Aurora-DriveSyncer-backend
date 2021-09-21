@@ -1,17 +1,21 @@
-package com.aurora.drivesyncer.lib.file.watcher;
+package com.aurora.drivesyncer.lib.file.listener;
 
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import com.aurora.drivesyncer.service.SyncService;
 import com.aurora.drivesyncer.utils.FileTests;
+import com.aurora.drivesyncer.worker.FileMonitor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class FileMonitorTests extends FileTests {
+class FileMonitorTest extends FileTests {
     @Autowired
     SyncService syncService;
     @Autowired
@@ -24,14 +28,12 @@ class FileMonitorTests extends FileTests {
         fileMonitor.fullScan();
         // 等待扫描完成
         Thread.sleep(1);
+        assertNotEquals(0, fileInfoMapper.selectCount(null));
+        List<FileInfo> fileInfoList = fileInfoMapper.selectList(null);
         FileInfo fileInfo = fileInfoMapper.selectByPathAndName("src/main/resources/", "application.yaml");
-//        assert 大小大于 0
-//                时间大于 0
-//            。。。。。
-    }
-
-    @Test
-    void testAddFileListener() throws IOException {
-        //todo: test
+        assertNotNull(fileInfo.getLastAccessTime());
+        assertNotNull(fileInfo.getFilename());
+        assertNotNull(fileInfo.getPath());
+        assertTrue(fileInfo.getSize() > 10);
     }
 }

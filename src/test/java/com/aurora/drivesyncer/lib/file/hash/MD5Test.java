@@ -9,7 +9,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MD5Tests extends FileTests {
+public class MD5Test extends FileTests {
     @Test
     public void testMD5OnString() {
         String str = "qwertuiop[]\\;'.,/1";

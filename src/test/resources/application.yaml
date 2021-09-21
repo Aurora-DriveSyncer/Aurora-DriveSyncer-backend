@@ -5,3 +5,7 @@ spring:
     url: jdbc:hsqldb:mem:mymemdb
     username: SA
     password:
+aurora:
+  worker:
+    upload: 4
+    delete: 4

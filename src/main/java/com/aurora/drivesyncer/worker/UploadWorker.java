@@ -6,37 +6,44 @@ import com.aurora.drivesyncer.lib.file.compress.Compressor;
 import com.aurora.drivesyncer.lib.file.compress.GzipCompressor;
 import com.aurora.drivesyncer.lib.file.encrypt.AuroraEncryptor;
 import com.aurora.drivesyncer.lib.file.encrypt.Encryptor;
+import com.aurora.drivesyncer.lib.ftp.FtpClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 
 // 消费者，从 fileUploadQueue 中取出等待上传的文件，然后进行上传
-public class SyncWorker implements Runnable {
+public class UploadWorker extends Worker {
     Config config;
     FileInfoMapper fileInfoMapper;
-    BlockingQueue<Integer> waitingFileQueue;
-    Thread thread;
-    Log log = LogFactory.getLog(getClass());
+    BlockingQueue<Integer> fileUploadQueue;
 
-    SyncWorker(Config config, FileInfoMapper fileInfoMapper, BlockingQueue<Integer> waitingFileQueue) {
+    public UploadWorker(Config config, FileInfoMapper fileInfoMapper, BlockingQueue<Integer> fileUploadQueue) {
         this.config = config;
         this.fileInfoMapper = fileInfoMapper;
-        this.waitingFileQueue = waitingFileQueue;
+        this.fileUploadQueue = fileUploadQueue;
     }
 
     @Override
     public void run() {
+        FtpClient ftpClient = new FtpClient(config.getUrl(), config.getUsername(), config.getPassword());
+        try {
+            ftpClient.open();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
         Compressor compressor = new GzipCompressor();
         Encryptor encryptor = new AuroraEncryptor(config.getFilePassword());
         while (true) {
             try {
                 // 从 waitingFileQueue 中取出等待上传的文件（阻塞操作）
-                Integer fileId = waitingFileQueue.take();
+                Integer fileId = fileUploadQueue.take();
                 // file 可能被放进两次队列，或已被删除
                 // 如果数据库中不存在或状态已经更新，就不用重复更新了
                 FileInfo fileInfo = fileInfoMapper.selectById(fileId);
@@ -59,9 +66,10 @@ public class SyncWorker implements Runnable {
                 InputStream inputStream = new FileInputStream(file);
                 InputStream zippedInputStream = compressor.compress(inputStream);
                 // 对文件加密
-                InputStream encryptedInputStream = encryptor.encrypt(inputStream);
+                InputStream encryptedInputStream = encryptor.encrypt(zippedInputStream);
                 // 上传文件
                 log.info("Uploading " + filepath);
+                ftpClient.uploadFile(filepath, encryptedInputStream);
                 // 上传完成
                 fileInfo.setStatus(FileInfo.SyncStatus.Synced);
                 fileInfoMapper.updateById(fileInfo);
@@ -69,19 +77,6 @@ public class SyncWorker implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void start() {
-        if (thread == null) {
-            thread = new Thread(this);
-            thread.start();
-        }
-    }
-
-    public void interrupt() {
-        if (thread != null) {
-            thread.interrupt();
         }
     }
 }

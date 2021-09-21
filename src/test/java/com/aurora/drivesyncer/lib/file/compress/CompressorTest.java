@@ -9,7 +9,7 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class CompressorTests extends FileTests {
+public class CompressorTest extends FileTests {
     static public final Compressor[] compressors = new Compressor[]{
             new GzipCompressor()
     };

@@ -9,7 +9,7 @@ import java.io.IOException;
 import static com.aurora.drivesyncer.entity.FileInfo.getAttribute;
 import static com.aurora.drivesyncer.lib.datetime.DateTime.toLocalTime;
 
-class DateTimeTests extends FileTests {
+class DateTimeTest extends FileTests {
     @Test
     public void testToLocalTime() throws IOException {
         File fileA = new File(testDirectory + "test-file-time-a");

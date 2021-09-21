@@ -15,7 +15,7 @@ import static org.springframework.test.jdbc.JdbcTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class FileInfoMapperTests {
+public class FileInfoMapperTest {
     @Autowired
     FileInfoMapper fileInfoMapper;
     @Autowired
@@ -96,6 +96,36 @@ public class FileInfoMapperTests {
         fileInfoMapper.updateById(fileInfoB);
         fileInfoList = fileInfoMapper.selectSyncingList();
         assertEquals(0, fileInfoList.size());
+    }
+
+    @Test
+    void insertOrUpdateByPathAndName() {
+        assertEquals(0, fileInfoMapper.selectCount(null));
+
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setPath("/");
+        fileInfo.setFilename("a.txt");
+        fileInfo.setStatus(SyncStatus.Synced);
+        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        assertEquals(1, fileInfoMapper.selectCount(null));
+
+        fileInfo.setFilename("b.txt");
+        fileInfo.setId(null);
+        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        assertEquals(2, fileInfoMapper.selectCount(null));
+
+        fileInfo.setPath("folder");
+        fileInfo.setId(null);
+        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        assertEquals(3, fileInfoMapper.selectCount(null));
+
+        fileInfo.setStatus(SyncStatus.Syncing);
+        fileInfo.setId(null);
+        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        assertEquals(3, fileInfoMapper.selectCount(null));
+
+        FileInfo fileInfo1 = fileInfoMapper.selectById(fileInfo.getId());
+        assertEquals(SyncStatus.Syncing, fileInfo1.getStatus());
     }
 
 

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class FtpClient implements Closeable {
+public class FtpClient implements Closeable {
 
     private final String url;
     private final String user;
@@ -43,18 +43,30 @@ class FtpClient implements Closeable {
         ftp.disconnect();
     }
 
-    List<String> listFiles(String path) throws IOException {
+    public List<String> listFiles(String path) throws IOException {
         FTPFile[] files = ftp.listFiles(path);
         return Arrays.stream(files)
                 .map(FTPFile::getName)
                 .collect(Collectors.toList());
     }
 
-    void downloadFile(File file, String path) throws IOException {
-        ftp.retrieveFile(path, new FileOutputStream(file));
+    public void uploadFile(String path, InputStream inputStream) throws IOException {
+        ftp.storeFile(path, inputStream);
     }
 
-    void uploadFile(File file, String path) throws IOException {
-        ftp.storeFile(path, new FileInputStream(file));
+    public void uploadFile(String path, File file) throws IOException {
+        uploadFile(path, new FileInputStream(file));
+    }
+
+    public void downloadFile(String path, OutputStream outputStream) throws IOException {
+        ftp.retrieveFile(path, outputStream);
+    }
+
+    public void downloadFile(String path, File file) throws IOException {
+        downloadFile(path, new FileOutputStream(file));
+    }
+
+    public void deleteFile(String path) throws IOException {
+        ftp.deleteFile(path);
     }
 }

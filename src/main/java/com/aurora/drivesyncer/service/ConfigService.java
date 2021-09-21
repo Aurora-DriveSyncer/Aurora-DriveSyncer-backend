@@ -20,6 +20,7 @@ public class ConfigService {
     public void setConfig(Config config) throws IOException {
         syncService.close();
         this.config = config;
-        syncService.initialize();
+        //todo: change directory
+        syncService.open();
     }
 }

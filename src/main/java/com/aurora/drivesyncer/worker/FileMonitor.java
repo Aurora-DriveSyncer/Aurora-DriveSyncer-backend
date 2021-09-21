@@ -1,5 +1,6 @@
-package com.aurora.drivesyncer.lib.file.watcher;
+package com.aurora.drivesyncer.worker;
 
+import com.aurora.drivesyncer.lib.file.listener.FileListener;
 import com.aurora.drivesyncer.service.SyncService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -15,14 +16,13 @@ import java.io.IOException;
 import java.util.Collection;
 
 
-public class FileMonitor implements Runnable {
+// 生产者，将扫描到的文件更新、删除加入到队列
+public class FileMonitor extends Worker {
     private final File root;                                // 文件夹目录
     private final long interval;                            // 监听间隔
     private static final long DEFAULT_INTERVAL = 5000;      // 默认监听间隔 5s
     private final FileAlterationListenerAdaptor listener;   // 事件处理类对象
     private final SyncService syncService;
-    private Thread thread;
-    private final Log log = LogFactory.getLog(getClass());
 
     public FileMonitor(String pathname, SyncService syncService) {
         this(pathname, DEFAULT_INTERVAL, new FileListener(syncService), syncService);
@@ -39,29 +39,16 @@ public class FileMonitor implements Runnable {
         this.syncService = syncService;
     }
 
-    public void start() throws IOException {
-        if (!root.exists()) {
-            throw new FileNotFoundException(root.getPath());
-        }
-        if (thread == null) {
-            thread = new Thread(this);
-        }
-        thread.start();
-    }
-
     @Override
     public void run() {
         try {
+            if (!root.exists()) {
+                throw new FileNotFoundException(root.getPath());
+            }
             fullScan();
             addFileListener();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void interrupt() {
-        if (thread != null) {
-            thread.interrupt();
         }
     }
 

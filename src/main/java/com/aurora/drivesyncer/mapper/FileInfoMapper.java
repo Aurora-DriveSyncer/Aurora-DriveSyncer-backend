@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     @Select("SELECT * FROM file_info WHERE path = #{path} AND filename = #{filename}")
     FileInfo selectByPathAndName(@Param("path") String path, @Param("filename") String filename);
 
-    default FileInfo insertOrUpdateByPathAndName(FileInfo fileInfo) {
+    default void insertOrUpdateByPathAndName(FileInfo fileInfo) {
         FileInfo fileInfo1 = this.selectByPathAndName(fileInfo.getPath(), fileInfo.getFilename());
         if (fileInfo1 != null) {
             fileInfo.setId(fileInfo1.getId());
@@ -39,7 +38,6 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
         } else {
             this.insert(fileInfo);
         }
-        return fileInfo;
     }
 
     @Delete("Delete * FROM file_info WHERE path = #{path} AND filename = #{filename}")

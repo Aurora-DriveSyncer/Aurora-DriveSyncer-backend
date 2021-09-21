@@ -10,6 +10,17 @@ public class Config {
     private String localPath;
     private String filePassword;
 
+    public Config() {
+    }
+
+    public Config(String url, String username, String password, String localPath, String filePassword) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.localPath = localPath;
+        this.filePassword = filePassword;
+    }
+
     public String getUrl() {
         return url;
     }

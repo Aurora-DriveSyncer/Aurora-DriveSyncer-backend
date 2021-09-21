@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.lib.file.watcher;
+package com.aurora.drivesyncer.lib.file.listener;
 
 import com.aurora.drivesyncer.service.SyncService;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
@@ -29,7 +29,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
         log.debug(String.format("Finish scanning %s...", observer.getDirectory()));
         super.onStop(observer);
     }
-    
+
     @Override
     public void onFileCreate(File file) {
         log.info(String.format("%s create ...", file.getPath()));
@@ -55,9 +55,13 @@ public class FileListener extends FileAlterationListenerAdaptor {
     @Override
     public void onFileDelete(File file) {
         log.info(String.format("%s deleted...", file.getPath()));
+        try {
+            syncService.deleteLocalFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onFileDelete(file);
     }
-
 
 
     @Override

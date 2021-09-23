@@ -50,7 +50,7 @@ public class FileTests {
         return file;
     }
 
-    // 读取 src/main/resources/application.yaml 用以测试
+    // 读取 pom.xml 用以测试
     public static File readSampleTextFile() {
         return new File("pom.xml");
     }

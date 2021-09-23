@@ -8,7 +8,6 @@ import java.io.IOException;
 
 @Service
 public class ConfigService {
-    @Autowired
     private Config config;
     @Autowired
     private SyncService syncService;
@@ -20,6 +19,7 @@ public class ConfigService {
     public void setConfig(Config config) throws IOException {
         syncService.close();
         this.config = config;
+        syncService.setConfig(config);
         //todo: change directory
         syncService.open();
     }

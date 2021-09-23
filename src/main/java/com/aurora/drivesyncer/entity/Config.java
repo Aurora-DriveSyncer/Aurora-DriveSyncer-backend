@@ -1,8 +1,5 @@
 package com.aurora.drivesyncer.entity;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class Config {
     private String url;
     private String username;

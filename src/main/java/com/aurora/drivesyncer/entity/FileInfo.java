@@ -1,8 +1,8 @@
 package com.aurora.drivesyncer.entity;
 
+import com.aurora.drivesyncer.lib.Utils;
 import com.aurora.drivesyncer.lib.file.hash.Hash;
 import com.aurora.drivesyncer.lib.file.hash.SpringMD5;
-import org.apache.tomcat.jni.Directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +24,6 @@ public class FileInfo {
 
     static public BasicFileAttributes getAttribute(File file) throws IOException {
         return Files.readAttributes(Path.of(file.getPath()), BasicFileAttributes.class);
-    }
-
-    static public String formatDirectory(String dir) {
-        if (!dir.endsWith("/")) {
-            dir += "/";
-        }
-        return dir;
     }
 
     private Integer id;
@@ -85,7 +78,7 @@ public class FileInfo {
     }
 
     public void setPath(String path) {
-        this.path = formatDirectory(path);
+        this.path = Utils.appendSlashIfMissing(path);
     }
 
     public String getCreationTime() {

@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
-import static org.springframework.test.jdbc.JdbcTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.jdbc.JdbcTestUtils.deleteFromTables;
 
 @SpringBootTest
 public class FileInfoMapperTest {

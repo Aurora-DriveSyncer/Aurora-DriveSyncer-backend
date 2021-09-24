@@ -13,7 +13,7 @@ public class ConfigService {
     private SyncService syncService;
 
     public Config getConfig() {
-        return config;
+        return config == null ? new Config() : config;
     }
 
     public void setConfig(Config config) throws IOException {

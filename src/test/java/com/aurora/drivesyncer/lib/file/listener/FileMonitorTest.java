@@ -1,5 +1,6 @@
 package com.aurora.drivesyncer.lib.file.listener;
 
+import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.lib.file.FileTestTemplate;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
@@ -23,6 +24,12 @@ class FileMonitorTest extends FileTestTemplate {
 
     @Test
     void testFullScan() throws IOException, InterruptedException {
+        Config config = new Config("http://localhost:8888/webdav/",
+                "user",
+                "user",
+                ".",
+                "aurora");
+        syncService.setConfig(config);
         syncService.createBlockingQueues();
         FileMonitor fileMonitor = new FileMonitor("src/main/resources/", syncService);
         fileMonitor.fullScan();

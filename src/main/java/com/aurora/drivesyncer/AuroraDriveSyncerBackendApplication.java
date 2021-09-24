@@ -11,5 +11,4 @@ public class AuroraDriveSyncerBackendApplication {
     public static void main(String[] args) throws Exception {
         ApplicationContext app = SpringApplication.run(AuroraDriveSyncerBackendApplication.class, args);
     }
-
 }

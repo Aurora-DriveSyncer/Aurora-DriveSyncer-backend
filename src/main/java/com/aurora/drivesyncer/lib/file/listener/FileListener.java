@@ -32,7 +32,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 
     @Override
     public void onFileCreate(File file) {
-        log.info(String.format("%s create ...", file.getPath()));
+        log.info(String.format("%s create...", file.getPath()));
         try {
             syncService.addLocalFile(file);
         } catch (IOException e) {
@@ -72,13 +72,13 @@ public class FileListener extends FileAlterationListenerAdaptor {
 
     @Override
     public void onDirectoryCreate(File directory) {
-        log.info(String.format("%s dir create....", directory.getPath()));
+        log.info(String.format("%s dir create...", directory.getPath()));
         super.onDirectoryCreate(directory);
     }
 
     @Override
     public void onDirectoryDelete(File directory) {
-        log.info(String.format("%s dir delete....", directory.getPath()));
+        log.info(String.format("%s dir delete...", directory.getPath()));
         super.onDirectoryCreate(directory);
     }
 }

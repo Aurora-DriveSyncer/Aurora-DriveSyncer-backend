@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.lib.datetime;
 
-import com.aurora.drivesyncer.utils.FileTests;
+import com.aurora.drivesyncer.lib.file.FileTestTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import static com.aurora.drivesyncer.entity.FileInfo.getAttribute;
 import static com.aurora.drivesyncer.lib.datetime.DateTime.toLocalTime;
 
-class DateTimeTest extends FileTests {
+class DateTimeTest extends FileTestTemplate {
     @Test
     public void testToLocalTime() throws IOException {
         File fileA = new File(testDirectory + "test-file-time-a");

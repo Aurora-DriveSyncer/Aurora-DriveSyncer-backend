@@ -8,4 +8,4 @@ spring:
 aurora:
   worker:
     upload: 4
-    delete: 4
+    delete: 2

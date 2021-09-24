@@ -1,14 +1,14 @@
 package com.aurora.drivesyncer.lib.file.encrypt;
 
-import com.aurora.drivesyncer.utils.FileTests;
+import com.aurora.drivesyncer.lib.file.FileTestTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class EncryptorTest extends FileTests {
-    static public final Encryptor[] encryptors = new Encryptor[]{
+public class EncryptorTest extends FileTestTemplate {
+    public static final Encryptor[] encryptors = new Encryptor[]{
             new AuroraEncryptor("aurora-drivesyncer")
     };
 

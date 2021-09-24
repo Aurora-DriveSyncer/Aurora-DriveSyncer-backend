@@ -2,7 +2,9 @@ package com.aurora.drivesyncer.service;
 
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
-import com.aurora.drivesyncer.lib.file.transfer.ApacheCommonFTPClient;
+import com.aurora.drivesyncer.lib.Utils;
+import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
+import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import com.aurora.drivesyncer.worker.DeleteWorker;
 import com.aurora.drivesyncer.worker.FileMonitor;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class SyncService {
     private Config config;
     private BlockingQueue<Integer> fileUploadQueue;
     private BlockingQueue<String> fileDeleteQueue;
-    private List<Worker> workers = new ArrayList<>();
+    private final List<Worker> workers = new ArrayList<>();
     Log log = LogFactory.getLog(getClass());
 
 
@@ -48,36 +49,42 @@ public class SyncService {
 
     // 初始化同步服务
     public void open() throws IOException {
+        log.info("Initializing SyncService");
         if (config == null) {
             return;
         }
         // 判断文件夹是否存在
         File root = new File(config.getLocalPath());
-        if (!root.exists()) {
-            throw new FileNotFoundException(root.getPath());
+        if (!root.exists() || !root.isDirectory()) {
+            throw new IOException();
         }
-        // 尝试连接
-        log.info("Testing FTP connection");
-        ApacheCommonFTPClient ftpClient = new ApacheCommonFTPClient(config.getUrl(), config.getUsername(), config.getPassword());
-        ftpClient.open();
-        ftpClient.close();
+        // 清理文件服务器的旧文件
+        log.info("Cleaning old files on file server");
+        FileTransferClient fileTransferClient
+                = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
+        fileTransferClient.open();
+        fileTransferClient.deleteFile(".");
+        fileTransferClient.close();
         // 创建消息队列
+        log.info("Creating message queues");
         createBlockingQueues();
         // 清理数据库
         log.info("Clearing database");
         fileInfoMapper.delete(null);
-        // 创建 Worker 线程
+        // 创建 FileMonitor 线程
         log.info("Creating 1 FileMonitor");
         Worker fileMonitor = new FileMonitor(config.getLocalPath(), this);
         workers.add(fileMonitor);
         fileMonitor.start();
-        log.info("Creating " + uploadWorkerCount + " UploadWorker(s)");
+        // 创建 UploadWorker 线程
+        log.info("Creating " + uploadWorkerCount + " UploadWorker" + Utils.prependingS(uploadWorkerCount));
         for (int i = 0; i < uploadWorkerCount; i++) {
             Worker worker = new UploadWorker(config, fileInfoMapper, fileUploadQueue);
             workers.add(worker);
             worker.start();
         }
-        log.info("Creating " + deleteWorkerCount + " DeletingWorker(s)");
+        // 创建 DeleteWorker 线程
+        log.info("Creating " + deleteWorkerCount + " DeleteWorker" + Utils.prependingS(deleteWorkerCount));
         for (int i = 0; i < deleteWorkerCount; i++) {
             Worker worker = new DeleteWorker(config, fileInfoMapper, fileDeleteQueue);
             workers.add(worker);
@@ -87,37 +94,48 @@ public class SyncService {
 
     // 清理同步服务
     public void close() throws IOException {
+        log.info("Cleaning SyncService");
         if (config == null) {
+            log.info("Skipping cleaning SyncService since config is null");
             return;
         }
         // 倒序清理 SyncWorker 线程
+        log.info("Cleaning workers");
         for (int i = workers.size() - 1; i >= 0; i--) {
             workers.get(i).interrupt();
         }
         workers.clear();
         // 清理数据库
+        log.info("Cleaning database");
         fileInfoMapper.delete(null);
-        // 清理 ftp 的文件
-        ApacheCommonFTPClient ftpClient = new ApacheCommonFTPClient(config.getUrl(), config.getUsername(), config.getPassword());
-        ftpClient.open();
-        ftpClient.deleteFile(".");
-        ftpClient.close();
+        // 清理文件服务器的文件
+        log.info("Cleaning files on file server");
+        FileTransferClient fileTransferClient
+                = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
+        fileTransferClient.open();
+        fileTransferClient.deleteFile(".");
+        fileTransferClient.close();
     }
 
     // 将发生了添加或更新的本地文件添加至数据库和队列
     public void addLocalFile(File file) throws IOException {
-        FileInfo fileInfo = new FileInfo(file);
+        // 存入数据库的是相对路径
+        FileInfo fileInfo = new FileInfo(file, config.getLocalPath());
         fileInfo.setStatus(FileInfo.SyncStatus.Waiting);
-        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
-        log.info("Update " + file.getPath() + " from database");
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
+        // log 也使用相对路径
+        String relativePath = fileInfo.getFullPath();
+        log.info("Update " + relativePath + " to database");
         fileUploadQueue.add(fileInfo.getId());
     }
 
     // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        fileInfoMapper.deleteByPathAndName(file.getParent(), file.getName());
-        log.info("Delete " + file.getPath() + " from database");
-        fileDeleteQueue.add(file.getPath());
+        String relativeParent = Utils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
+        String relativePath = relativeParent + file.getName();
+        fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
+        log.info("Delete " + relativePath + " from database");
+        fileDeleteQueue.add(relativePath);
     }
 
     public void createBlockingQueues() {

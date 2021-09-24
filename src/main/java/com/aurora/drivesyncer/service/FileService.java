@@ -13,7 +13,7 @@ public class FileService {
     private FileInfoMapper fileInfoMapper;
 
     public List<FileInfo> getFileListByPath(String path) {
-        return fileInfoMapper.selectByPath(path);
+        return fileInfoMapper.selectByParent(path);
     }
 
     public List<FileInfo> getSyncingList() {

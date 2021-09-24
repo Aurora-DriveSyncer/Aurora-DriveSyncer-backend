@@ -1,4 +1,4 @@
-package com.aurora.drivesyncer.utils;
+package com.aurora.drivesyncer.lib.file;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -12,11 +12,11 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Random;
 
-public class FileTests {
-    static public final String testDirectory = ".test/";
+public class FileTestTemplate {
+    public static final String testDirectory = "aurora-tests-temp/";
 
     @BeforeAll
-    static public void setup() throws IOException {
+    public static void setupAll() throws IOException {
         File testDir = new File(testDirectory);
         if (!testDir.exists() && !testDir.mkdirs()) {
             throw new IOException();
@@ -24,7 +24,7 @@ public class FileTests {
     }
 
     @AfterAll
-    static public void teardown() throws IOException {
+    public static void teardownAll() throws IOException {
         FileUtils.deleteDirectory(new File(testDirectory));
     }
 
@@ -42,8 +42,7 @@ public class FileTests {
 
     // 创建一个空文件并返回
     public static File createTempEmptyFile() throws IOException {
-        String path = testDirectory + "empty-file";
-        File file = new File(path);
+        File file = new File(testDirectory, "empty-file");
         if (!file.exists() && !file.createNewFile()) {
             throw new IOException();
         }
@@ -72,10 +71,9 @@ public class FileTests {
 
     // 创建一个随机二进制文件
     public static File createTempBinaryFile(int size) throws IOException {
-        String path = testDirectory + "random-binary-file";
         byte[] bytes = new byte[size];
         new Random().nextBytes(bytes);
-        File file = new File(path);
+        File file = new File(testDirectory, "random-binary-file");
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(bytes);
         }

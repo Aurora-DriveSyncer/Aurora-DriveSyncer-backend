@@ -20,7 +20,6 @@ public class ConfigService {
         syncService.close();
         this.config = config;
         syncService.setConfig(config);
-        //todo: change directory
         syncService.open();
     }
 }

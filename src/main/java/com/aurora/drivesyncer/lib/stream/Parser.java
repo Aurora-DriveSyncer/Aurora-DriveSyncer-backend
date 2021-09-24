@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Parser {
-    static public ByteArrayInputStream toInputStream(ByteArrayOutputStream byteArrayOutputStream) {
+    public static ByteArrayInputStream toInputStream(ByteArrayOutputStream byteArrayOutputStream) {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
-    static public ByteArrayOutputStream toOutputStream(InputStream inputStream) throws IOException {
+    public static ByteArrayOutputStream toOutputStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.write(inputStream.readAllBytes());
         return byteArrayOutputStream;

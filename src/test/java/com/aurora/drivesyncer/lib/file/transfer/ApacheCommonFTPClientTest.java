@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import static com.aurora.drivesyncer.utils.FileTests.readSampleTextFile;
+import static com.aurora.drivesyncer.lib.file.FileTestTemplate.readSampleTextFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

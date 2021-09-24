@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.lib.file.hash;
 
-import com.aurora.drivesyncer.utils.FileTests;
+import com.aurora.drivesyncer.lib.file.FileTestTemplate;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MD5Test extends FileTests {
+public class MD5Test extends FileTestTemplate {
     @Test
     public void testMD5OnString() {
         String str = "qwertuiop[]\\;'.,/1";

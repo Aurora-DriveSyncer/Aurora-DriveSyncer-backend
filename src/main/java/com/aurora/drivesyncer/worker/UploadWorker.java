@@ -6,7 +6,8 @@ import com.aurora.drivesyncer.lib.file.compress.Compressor;
 import com.aurora.drivesyncer.lib.file.compress.GzipCompressor;
 import com.aurora.drivesyncer.lib.file.encrypt.AuroraEncryptor;
 import com.aurora.drivesyncer.lib.file.encrypt.Encryptor;
-import com.aurora.drivesyncer.lib.file.transfer.ApacheCommonFTPClient;
+import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
+import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 
 import java.io.File;
@@ -29,9 +30,10 @@ public class UploadWorker extends Worker {
 
     @Override
     public void run() {
-        ApacheCommonFTPClient ftpClient = new ApacheCommonFTPClient(config.getUrl(), config.getUsername(), config.getPassword());
+        FileTransferClient fileTransferClient =
+                new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
         try {
-            ftpClient.open();
+            fileTransferClient.open();
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -49,8 +51,7 @@ public class UploadWorker extends Worker {
                     if (fileInfo == null) {
                         log.warn("FileInfo not found. Skipping uploading");
                     } else {
-                        String filepath = fileInfo.getPath() + fileInfo.getFilename();
-                        log.warn(filepath + " is " + fileInfo.getStatus() + ". Skipping uploading");
+                        log.warn(fileInfo.getFullPath() + " is " + fileInfo.getStatus() + ". Skipping uploading");
                     }
                     continue;
                 }
@@ -58,20 +59,20 @@ public class UploadWorker extends Worker {
                 fileInfo.setStatus(FileInfo.SyncStatus.Syncing);
                 fileInfoMapper.updateById(fileInfo);
                 // 对文件压缩
-                String filepath = fileInfo.getPath() + fileInfo.getFilename();
-                log.info("Zipping and Encrypting " + filepath);
-                File file = new File(filepath);
+                String fullPath = fileInfo.getFullPath();
+                log.info("Zipping and Encrypting " + fullPath);
+                File file = new File(config.getLocalPath(), fullPath);
                 InputStream inputStream = new FileInputStream(file);
                 InputStream zippedInputStream = compressor.compress(inputStream);
                 // 对文件加密
                 InputStream encryptedInputStream = encryptor.encrypt(zippedInputStream);
                 // 上传文件
-                log.info("Uploading " + filepath);
-                ftpClient.uploadFile(filepath, encryptedInputStream);
+                log.info("Uploading " + fullPath);
+                fileTransferClient.uploadFile(fullPath, encryptedInputStream);
                 // 上传完成
                 fileInfo.setStatus(FileInfo.SyncStatus.Synced);
                 fileInfoMapper.updateById(fileInfo);
-                log.info("Finish uploading " + filepath);
+                log.info("Finish uploading " + fullPath);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -4,7 +4,10 @@ import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ public class ApacheCommonFTPClient implements FileTransferClient {
         this.password = password;
     }
 
+    @Override
     public void open() throws IOException {
         ftp = new org.apache.commons.net.ftp.FTPClient();
 
@@ -47,6 +51,13 @@ public class ApacheCommonFTPClient implements FileTransferClient {
         ftp.disconnect();
     }
 
+    @Override
+    public void testConnection() throws IOException {
+        open();
+        close();
+    }
+
+    @Override
     public List<String> listFiles(String path) throws IOException {
         FTPFile[] files = ftp.listFiles(path);
         return Arrays.stream(files)
@@ -61,10 +72,6 @@ public class ApacheCommonFTPClient implements FileTransferClient {
         }
     }
 
-    public void uploadFile(String path, File file) throws IOException {
-        uploadFile(path, new FileInputStream(file));
-    }
-
     public void downloadFile(String path, OutputStream outputStream) throws IOException {
         ftp.enterLocalPassiveMode();
         if (!ftp.retrieveFile(path, outputStream)) {
@@ -73,10 +80,7 @@ public class ApacheCommonFTPClient implements FileTransferClient {
         ftp.enterLocalActiveMode();
     }
 
-    public void downloadFile(String path, File file) throws IOException {
-        downloadFile(path, new FileOutputStream(file));
-    }
-
+    @Override
     public void deleteFile(String path) throws IOException {
         ftp.deleteFile(path);
     }

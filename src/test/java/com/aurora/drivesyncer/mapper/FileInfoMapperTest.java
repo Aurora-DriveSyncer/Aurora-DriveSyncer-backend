@@ -106,22 +106,22 @@ public class FileInfoMapperTest {
         fileInfo.setPath("/");
         fileInfo.setFilename("a.txt");
         fileInfo.setStatus(SyncStatus.Synced);
-        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
         assertEquals(1, fileInfoMapper.selectCount(null));
 
         fileInfo.setFilename("b.txt");
         fileInfo.setId(null);
-        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
         assertEquals(2, fileInfoMapper.selectCount(null));
 
         fileInfo.setPath("folder");
         fileInfo.setId(null);
-        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
         assertEquals(3, fileInfoMapper.selectCount(null));
 
         fileInfo.setStatus(SyncStatus.Syncing);
         fileInfo.setId(null);
-        fileInfoMapper.insertOrUpdateByPathAndName(fileInfo);
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
         assertEquals(3, fileInfoMapper.selectCount(null));
 
         FileInfo fileInfo1 = fileInfoMapper.selectById(fileInfo.getId());

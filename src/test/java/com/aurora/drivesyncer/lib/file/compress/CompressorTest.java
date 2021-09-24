@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.lib.file.compress;
 
-import com.aurora.drivesyncer.utils.FileTests;
+import com.aurora.drivesyncer.lib.file.FileTestTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
@@ -9,8 +9,8 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class CompressorTest extends FileTests {
-    static public final Compressor[] compressors = new Compressor[]{
+public class CompressorTest extends FileTestTemplate {
+    public static final Compressor[] compressors = new Compressor[]{
             new GzipCompressor()
     };
     Log log = LogFactory.getLog(getClass());

@@ -8,7 +8,7 @@ public class WebDAVTestUtils {
             new WebDAVClient("http://localhost:8888/webdav/", "user", "user");
 
     // 如能连接上部署的 WebDAV 测试服务并删除所有文件，返回 true
-    public static boolean deleteAllFiles() {
+    public static boolean initializeServer() {
         try {
             webDAVClient.deleteFile(".");
             return webDAVClient.listFiles("/").size() == 0;

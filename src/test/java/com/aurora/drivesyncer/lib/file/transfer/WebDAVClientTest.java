@@ -19,12 +19,12 @@ class WebDAVClientTest {
 
     @BeforeEach
     public void setup() {
-        Assumptions.assumeTrue(WebDAVTestUtils.deleteAllFiles());
+        Assumptions.assumeTrue(WebDAVTestUtils.initializeServer());
     }
 
     @AfterEach
     public void teardown() throws IOException {
-        WebDAVTestUtils.deleteAllFiles();
+        WebDAVTestUtils.initializeServer();
     }
 
     @Test

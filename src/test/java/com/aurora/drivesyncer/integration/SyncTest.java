@@ -3,6 +3,7 @@ package com.aurora.drivesyncer.integration;
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.lib.file.FileTestTemplate;
+import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVTestUtils;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import com.aurora.drivesyncer.web.ConfigController;
@@ -18,9 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static com.aurora.drivesyncer.lib.Utils.formatLog;
 
@@ -31,18 +29,20 @@ public class SyncTest extends FileTestTemplate {
     @Autowired
     FileInfoMapper fileInfoMapper;
 
+    WebDAVClient webDAVClient = WebDAVTestUtils.webDAVClient;
     Log log = LogFactory.getLog(getClass());
 
     @BeforeEach
     public void setup() {
-        Assumptions.assumeTrue(WebDAVTestUtils.deleteAllFiles());
+        Assumptions.assumeTrue(WebDAVTestUtils.initializeServer());
     }
 
     @AfterEach
     public void teardown() throws IOException {
-        // WebDAVTestUtils.deleteAllFiles();
     }
 
+    // 等待同步完成
+    // 轮讯数据库，直至所有 fileInfo 均为 Synced
     void waitAllSynced() {
         try {
             Thread.sleep(5000);
@@ -76,17 +76,45 @@ public class SyncTest extends FileTestTemplate {
         waitAllSynced();
         log.info(formatLog("FINISH SYNCING TEXT FILE"));
 
-        log.info(formatLog("START SYNCING SOFT LINKS"));
-        Path textFilePath = textFile.toPath();
-        Path softLink = Paths.get(testDirectory, "soft_link");
-        Files.createSymbolicLink(softLink, textFilePath);
-        waitAllSynced();
-        log.info(formatLog("FINISH SYNCING SOFT LINKS"));
-
-        log.info(formatLog("START SYNCING HARD LINKS"));
-        Path hardLink = Paths.get(testDirectory, "hard_link");
-        Files.createLink(hardLink, textFilePath);
-        waitAllSynced();
-        log.info(formatLog("FINISH SYNCING HARD LINKS"));
+//        log.info(formatLog("START SYNCING SOFT LINKS"));
+//        createSoftLink(textFile);
+//        waitAllSynced();
+//        log.info(formatLog("FINISH SYNCING SOFT LINKS"));
+//
+//        log.info(formatLog("START SYNCING HARD LINKS"));
+//        createHardLink(textFile);
+//        waitAllSynced();
+//        log.info(formatLog("FINISH SYNCING HARD LINKS"));
     }
+
+
+//    @Test
+//    void testSyncLinks() throws IOException {
+//        File textFile = createTempBinaryFile(1024 * 1024);
+//        File softLink = createSoftLink(textFile);
+//        File hardLink = createHardLink(textFile);
+//
+//        log.info("START SYNCING LINKS TEST");
+//        Config config = new Config("http://localhost:8888/webdav/",
+//                "user",
+//                "user",
+//                testDirectory,
+//                "aurora");
+//        configController.setConfig(config);
+//        waitAllSynced();
+//        log.info("FINISH SYNCING LINKS TEST");
+//        // 软硬链接不应当出现在 WebDAV 中
+//        assertFalse(webDAVClient.exists(softLink.getName()));
+//        assertFalse(webDAVClient.exists(hardLink.getName()));
+//        // 软硬链接应当出现在数据库中
+//        FileInfo softLinkInfo = fileInfoMapper.selectByParentAndName("", softLink.getName());
+//        assertNotNull(softLinkInfo);
+//        assertEquals(FileInfo.LinkType.SoftLink, softLinkInfo.getLinkType());
+//        assertEquals(FileInfo.SyncStatus.Synced, softLinkInfo.getStatus());
+//
+//        FileInfo hardLinkInfo = fileInfoMapper.selectByParentAndName("", softLink.getName());
+//        assertNotNull(hardLinkInfo);
+//        assertEquals(FileInfo.LinkType.HardLink, hardLinkInfo.getLinkType());
+//        assertEquals(FileInfo.SyncStatus.Synced, hardLinkInfo.getStatus());
+//    }
 }

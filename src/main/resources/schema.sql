@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS file_info (
   last_access_time VARCHAR(100),
   last_modified_time VARCHAR(100),
   is_directory INT,
+  link_type VARCHAR(20),
   size INT,
   hash VARCHAR(64),
   status VARCHAR(20)

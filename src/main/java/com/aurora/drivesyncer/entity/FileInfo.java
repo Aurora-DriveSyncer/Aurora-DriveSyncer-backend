@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.entity;
 
-import com.aurora.drivesyncer.lib.Utils;
+import com.aurora.drivesyncer.lib.file.Utils;
 import com.aurora.drivesyncer.lib.file.hash.Hash;
 import com.aurora.drivesyncer.lib.file.hash.SpringMD5;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -17,10 +17,16 @@ import static com.aurora.drivesyncer.lib.datetime.DateTime.toLocalTime;
 public class FileInfo {
     public enum SyncStatus
     {
-        Waiting, // 等待同步
-        Syncing, // 同步中（包括上传和删除）
-        Synced   // 已同步
+        Waiting,    // 等待同步
+        Syncing,    // 同步中（包括上传和删除）
+        Synced      // 已同步
     }
+//    public enum LinkType
+//    {
+//        HardLink,   // 硬链接
+//        SoftLink,   // 软链接
+//        RegularFile // 常规文件
+//    }
 
     public static Hash hashAlgorithm = new SpringMD5();
 
@@ -40,6 +46,7 @@ public class FileInfo {
     private String lastAccessTime;
     private String lastModifiedTime;
     private Boolean isDirectory;
+//    private LinkType linkType;
     private Long size;
     private String hash;
     private SyncStatus status;
@@ -85,7 +92,7 @@ public class FileInfo {
     // 保证 parent 不以 / 开头
     // 且保证 parent 不为 "" 时，以 / 结尾
     public void setPath(String path) {
-        this.path = Utils.removePrependingSlash(Utils.appendSlashIfMissing(path));
+        this.path = com.aurora.drivesyncer.lib.file.Utils.removePrependingSlash(com.aurora.drivesyncer.lib.file.Utils.appendSlashIfMissing(path));
     }
 
     public String getFullPath() {return path + filename;}
@@ -121,6 +128,14 @@ public class FileInfo {
     public void setDirectory(Boolean directory) {
         isDirectory = directory;
     }
+
+//    public LinkType getLinkType() {
+//        return linkType;
+//    }
+//
+//    public void setLinkType(LinkType linkType) {
+//        this.linkType = linkType;
+//    }
 
     public Long getSize() {
         return size;

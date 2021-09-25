@@ -79,4 +79,18 @@ public class FileTestTemplate {
         }
         return file;
     }
+
+//    // 创建一个软链接
+//    public static File createSoftLink(File file) throws IOException {
+//        File softLink = new File(testDirectory, file.getName() + "-soft-link");
+//        Files.createSymbolicLink(softLink.toPath(), file.toPath().toAbsolutePath());
+//        return softLink;
+//    }
+//
+//    // 创建一个硬链接
+//    public static File createHardLink(File file) throws IOException {
+//        File hardLink = new File(testDirectory, file.getName() + "-hard-link");
+//        Files.createLink(hardLink.toPath(), file.toPath());
+//        return hardLink;
+//    }
 }

@@ -131,7 +131,7 @@ public class SyncService {
 
     // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        String relativeParent = Utils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
+        String relativeParent = com.aurora.drivesyncer.lib.file.Utils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
         String relativePath = relativeParent + file.getName();
         fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
         log.info("Delete " + relativePath + " from database");

@@ -11,6 +11,9 @@ import java.util.concurrent.BlockingQueue;
 // 消费者，从 fileDeleteQueue 中取出等待删除的文件，然后进行删除
 public class DeleteWorker extends Worker {
     Config config;
+
+    FileTransferClient fileTransferClient;
+
     FileInfoMapper fileInfoMapper;
     BlockingQueue<String> fileDeleteQueue;
 
@@ -18,12 +21,11 @@ public class DeleteWorker extends Worker {
         this.config = config;
         this.fileInfoMapper = fileInfoMapper;
         this.fileDeleteQueue = fileDeleteQueue;
+        this.fileTransferClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
     }
 
     @Override
     public void run() {
-        FileTransferClient fileTransferClient =
-                new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
         try {
             fileTransferClient.open();
         } catch (IOException e) {
@@ -34,11 +36,15 @@ public class DeleteWorker extends Worker {
             try {
                 // 从 waitingFileQueue 中取出等待上传的文件（阻塞操作）
                 String filepath = fileDeleteQueue.take();
-                fileTransferClient.deleteFile(filepath);
-                log.info("Deleting " + filepath + "from FTP Server");
+                deleteFile(filepath);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void deleteFile(String filepath) throws IOException {
+        fileTransferClient.deleteFile(filepath);
+        log.info("Deleting " + filepath + "from FTP Server");
     }
 }

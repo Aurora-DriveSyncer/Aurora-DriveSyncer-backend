@@ -1,6 +1,6 @@
-package com.aurora.drivesyncer.lib;
+package com.aurora.drivesyncer.lib.log;
 
-public class Utils {
+public class LogUtils {
     // 计算是否需要加复数 s
     public static String prependingS(int count) {
         return count != 1 ? "s" : "";

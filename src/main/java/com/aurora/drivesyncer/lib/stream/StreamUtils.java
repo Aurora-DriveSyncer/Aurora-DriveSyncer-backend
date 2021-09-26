@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Parser {
+public class StreamUtils {
     public static ByteArrayInputStream toInputStream(ByteArrayOutputStream byteArrayOutputStream) {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }

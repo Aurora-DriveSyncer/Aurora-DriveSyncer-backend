@@ -3,10 +3,10 @@ package com.aurora.drivesyncer.integration;
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.lib.file.FileTestTemplate;
-import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
-import com.aurora.drivesyncer.lib.file.transfer.WebDAVTestUtils;
+import com.aurora.drivesyncer.lib.file.transfer.WebDAVClientTest;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import com.aurora.drivesyncer.web.ConfigController;
+import com.aurora.drivesyncer.web.FileController;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,25 +16,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
-import static com.aurora.drivesyncer.lib.Utils.formatLog;
+import static com.aurora.drivesyncer.lib.log.LogUtils.formatLog;
 
 @SpringBootTest
 public class SyncTest extends FileTestTemplate {
+    @Autowired
+    FileController fileController;
     @Autowired
     ConfigController configController;
     @Autowired
     FileInfoMapper fileInfoMapper;
 
-    WebDAVClient webDAVClient = WebDAVTestUtils.webDAVClient;
     Log log = LogFactory.getLog(getClass());
 
     @BeforeEach
     public void setup() {
-        Assumptions.assumeTrue(WebDAVTestUtils.initializeServer());
+        Assumptions.assumeTrue(WebDAVClientTest.initializeServer());
     }
 
     @AfterEach
@@ -69,13 +72,24 @@ public class SyncTest extends FileTestTemplate {
                 "aurora");
         configController.setConfig(config);
         waitAllSynced();
-        log.info(formatLog( "FINISH FIRST SYNCING"));
+        log.info(formatLog("FINISH FIRST SYNCING"));
 
         log.info(formatLog("START SYNCING TEXT FILE"));
-        File textFile = createTempBinaryFile(1024 * 1024);
+        File file = createTempBinaryFile(1024 * 1024);
         waitAllSynced();
         log.info(formatLog("FINISH SYNCING TEXT FILE"));
 
+        String[] fileList = {
+                "pom.xml",
+                "src/main/resources/application.yaml",
+                "src/main/resources/schema.sql",
+                "src/main/java/com/aurora/drivesyncer/AuroraDriveSyncerBackendApplication.java"
+        };
+        HttpServletResponse response = new MockHttpServletResponse();
+        for (String path : fileList) {
+            fileController.downloadFile(path, response);
+            log.info(String.format("%s is the guessed Content-Type of %s", response.getContentType(), path));
+        }
 //        log.info(formatLog("START SYNCING SOFT LINKS"));
 //        createSoftLink(textFile);
 //        waitAllSynced();

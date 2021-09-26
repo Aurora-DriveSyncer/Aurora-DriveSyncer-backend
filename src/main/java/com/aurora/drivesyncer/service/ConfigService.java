@@ -18,8 +18,13 @@ public class ConfigService {
 
     public void setConfig(Config config) throws IOException {
         syncService.close();
-        this.config = config;
-        syncService.setConfig(config);
-        syncService.open();
+        try {
+            this.config = config;
+            syncService.setConfig(config);
+            syncService.open();
+        } catch (Exception e) {
+            this.config = null;
+            throw e;
+        }
     }
 }

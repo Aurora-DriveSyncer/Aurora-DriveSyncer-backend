@@ -25,5 +25,11 @@ public interface FileTransferClient extends Closeable {
         downloadFile(path, new FileOutputStream(file));
     }
 
+    default byte[] downloadFileToByteArray(String path) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        downloadFile(path, baos);
+        return baos.toByteArray();
+    }
+
     void deleteFile(String path) throws IOException;
 }

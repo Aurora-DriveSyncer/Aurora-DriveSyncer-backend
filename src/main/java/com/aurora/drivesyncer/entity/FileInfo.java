@@ -1,6 +1,6 @@
 package com.aurora.drivesyncer.entity;
 
-import com.aurora.drivesyncer.lib.file.Utils;
+import com.aurora.drivesyncer.lib.file.FileUtils;
 import com.aurora.drivesyncer.lib.file.hash.Hash;
 import com.aurora.drivesyncer.lib.file.hash.SpringMD5;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -12,7 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import static com.aurora.drivesyncer.lib.datetime.DateTime.toLocalTime;
+import static com.aurora.drivesyncer.lib.datetime.DateTimeUtils.toLocalTime;
+import static com.aurora.drivesyncer.lib.file.FileUtils.formatPath;
 
 public class FileInfo {
     public enum SyncStatus
@@ -57,7 +58,10 @@ public class FileInfo {
 
     public FileInfo(File file, String base) throws IOException {
         this.filename = file.getName();
-        String relativePath = Utils.getRelativePath(file.getParent(), base);
+        if (filename.equals("pom.xml")) {
+            System.out.println(2333);
+        }
+        String relativePath = FileUtils.getRelativePath(file.getParent(), base);
         // setPath 会将路径名规范化
         this.setPath(relativePath);
         BasicFileAttributes attr = getAttribute(file);
@@ -92,7 +96,7 @@ public class FileInfo {
     // 保证 parent 不以 / 开头
     // 且保证 parent 不为 "" 时，以 / 结尾
     public void setPath(String path) {
-        this.path = com.aurora.drivesyncer.lib.file.Utils.removePrependingSlash(com.aurora.drivesyncer.lib.file.Utils.appendSlashIfMissing(path));
+        this.path = formatPath(path);
     }
 
     public String getFullPath() {return path + filename;}

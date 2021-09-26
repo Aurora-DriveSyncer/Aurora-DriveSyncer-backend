@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static com.aurora.drivesyncer.lib.stream.Parser.toInputStream;
+import static com.aurora.drivesyncer.lib.stream.StreamUtils.toInputStream;
 
 public class GzipCompressor implements Compressor {
     @Override

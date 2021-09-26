@@ -19,6 +19,11 @@ import java.util.concurrent.BlockingQueue;
 // 消费者，从 fileUploadQueue 中取出等待上传的文件，然后进行上传
 public class UploadWorker extends Worker {
     Config config;
+
+    Compressor compressor;
+    Encryptor encryptor;
+    FileTransferClient fileTransferClient;
+
     FileInfoMapper fileInfoMapper;
     BlockingQueue<Integer> fileUploadQueue;
 
@@ -26,20 +31,19 @@ public class UploadWorker extends Worker {
         this.config = config;
         this.fileInfoMapper = fileInfoMapper;
         this.fileUploadQueue = fileUploadQueue;
+        this.compressor = new GzipCompressor();
+        this.encryptor = new AuroraEncryptor(config.getFilePassword());
+        this.fileTransferClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
     }
 
     @Override
     public void run() {
-        FileTransferClient fileTransferClient =
-                new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
         try {
             fileTransferClient.open();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        Compressor compressor = new GzipCompressor();
-        Encryptor encryptor = new AuroraEncryptor(config.getFilePassword());
         while (true) {
             try {
                 // 从 waitingFileQueue 中取出等待上传的文件（阻塞操作）
@@ -58,24 +62,29 @@ public class UploadWorker extends Worker {
                 // 更新数据库 status 字段
                 fileInfo.setStatus(FileInfo.SyncStatus.Syncing);
                 fileInfoMapper.updateById(fileInfo);
-                // 对文件压缩
-                String fullPath = fileInfo.getFullPath();
-                log.info("Zipping and Encrypting " + fullPath);
-                File file = new File(config.getLocalPath(), fullPath);
-                InputStream inputStream = new FileInputStream(file);
-                InputStream zippedInputStream = compressor.compress(inputStream);
-                // 对文件加密
-                InputStream encryptedInputStream = encryptor.encrypt(zippedInputStream);
                 // 上传文件
-                log.info("Uploading " + fullPath);
-                fileTransferClient.uploadFile(fullPath, encryptedInputStream);
+                uploadFile(fileInfo);
                 // 上传完成
                 fileInfo.setStatus(FileInfo.SyncStatus.Synced);
                 fileInfoMapper.updateById(fileInfo);
-                log.info("Finish uploading " + fullPath);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void uploadFile(FileInfo fileInfo) throws IOException {
+        // 对文件压缩
+        String fullPath = fileInfo.getFullPath();
+        log.info("Zipping and encrypting " + fullPath);
+        File file = new File(config.getLocalPath(), fullPath);
+        InputStream inputStream = new FileInputStream(file);
+        InputStream zippedInputStream = compressor.compress(inputStream);
+        // 对文件加密
+        InputStream encryptedInputStream = encryptor.encrypt(zippedInputStream);
+        // 上传文件
+        log.info("Uploading " + fullPath);
+        fileTransferClient.uploadFile(fullPath, encryptedInputStream);
+        log.info("Finish uploading " + fileInfo.getFullPath());
     }
 }

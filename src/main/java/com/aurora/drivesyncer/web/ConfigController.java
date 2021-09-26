@@ -19,7 +19,8 @@ public class ConfigController {
     }
 
     @PutMapping
-    public void setConfig(@RequestBody Config config) throws IOException {
+    public Config setConfig(@RequestBody Config config) throws IOException {
         configService.setConfig(config);
+        return config;
     }
 }

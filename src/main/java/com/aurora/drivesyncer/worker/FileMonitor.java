@@ -1,7 +1,7 @@
 package com.aurora.drivesyncer.worker;
 
-import com.aurora.drivesyncer.lib.Utils;
 import com.aurora.drivesyncer.lib.file.listener.FileListener;
+import com.aurora.drivesyncer.lib.log.LogUtils;
 import com.aurora.drivesyncer.service.SyncService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -58,7 +58,7 @@ public class FileMonitor extends Worker {
             syncService.addLocalFile(file);
         }
         log.info(String.format("Finish scanning %s (%d file%s found)",
-                root.getPath(), files.size(), Utils.prependingS(files.size())));
+                root.getPath(), files.size(), LogUtils.prependingS(files.size())));
     }
 
     public void addFileListener() throws Exception {

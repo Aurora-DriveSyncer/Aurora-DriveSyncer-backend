@@ -3,23 +3,26 @@ package com.aurora.drivesyncer.lib.file;
 import java.io.File;
 import java.net.URI;
 
-public class Utils {
+public class FileUtils {
     // 如果字符串不以 / 结尾，则追加一个 /
     // 用以保证（文件夹路径）字符串以 / 结尾
-    public static String appendSlashIfMissing(String str) {
-        if (!str.endsWith("/")) {
-            str += "/";
-        }
-        return str;
+    public static String appendSlashIfMissing(String path) {
+        return path == null ? "" :
+                path.endsWith("/") ? path :
+                        path + "/";
     }
 
     // 如果字符串以 / 开头，则删去一个 /
-    // 用以保证（相对路径路径）字符串不以 / 开头
-    public static String removePrependingSlash(String str) {
-        if (str.startsWith("/")) {
-            str = str.substring(1);
-        }
-        return str;
+    // 用以保证（相对路径）字符串不以 / 开头
+    public static String removePrependingSlash(String path) {
+        return path == null ? "" :
+                path.startsWith("/") ? path.substring(1) :
+                        path;
+    }
+
+    // 将相对文件夹路径格式化
+    public static String formatPath(String path) {
+        return removePrependingSlash(appendSlashIfMissing(path));
     }
 
     // 获取两个路径（路径不需要存在）的相对路径

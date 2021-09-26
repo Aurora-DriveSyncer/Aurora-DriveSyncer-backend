@@ -4,7 +4,7 @@ import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-public class DateTime {
+public class DateTimeUtils {
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String toLocalTime(FileTime fileTime) {

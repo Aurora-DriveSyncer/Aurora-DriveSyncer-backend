@@ -2,14 +2,13 @@ package com.aurora.drivesyncer.service;
 
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
-import com.aurora.drivesyncer.lib.Utils;
+import com.aurora.drivesyncer.lib.file.FileUtils;
 import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
+import com.aurora.drivesyncer.lib.log.LogUtils;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
-import com.aurora.drivesyncer.worker.DeleteWorker;
-import com.aurora.drivesyncer.worker.FileMonitor;
-import com.aurora.drivesyncer.worker.UploadWorker;
-import com.aurora.drivesyncer.worker.Worker;
+import com.aurora.drivesyncer.worker.*;
+import com.sun.istack.NotNull;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ public class SyncService {
     private BlockingQueue<Integer> fileUploadQueue;
     private BlockingQueue<String> fileDeleteQueue;
     private final List<Worker> workers = new ArrayList<>();
+    private DownloadWorker downloadWorker;
     Log log = LogFactory.getLog(getClass());
 
 
@@ -45,6 +45,14 @@ public class SyncService {
 
     public void setConfig(Config config) {
         this.config = config;
+    }
+
+    @NotNull
+    public DownloadWorker getDownloadWorker() throws IOException {
+        if (downloadWorker == null) {
+            throw new IOException();
+        }
+        return downloadWorker;
     }
 
     // 初始化同步服务
@@ -77,19 +85,22 @@ public class SyncService {
         workers.add(fileMonitor);
         fileMonitor.start();
         // 创建 UploadWorker 线程
-        log.info("Creating " + uploadWorkerCount + " UploadWorker" + Utils.prependingS(uploadWorkerCount));
+        log.info("Creating " + uploadWorkerCount + " UploadWorker" + LogUtils.prependingS(uploadWorkerCount));
         for (int i = 0; i < uploadWorkerCount; i++) {
             Worker worker = new UploadWorker(config, fileInfoMapper, fileUploadQueue);
             workers.add(worker);
             worker.start();
         }
         // 创建 DeleteWorker 线程
-        log.info("Creating " + deleteWorkerCount + " DeleteWorker" + Utils.prependingS(deleteWorkerCount));
+        log.info("Creating " + deleteWorkerCount + " DeleteWorker" + LogUtils.prependingS(deleteWorkerCount));
         for (int i = 0; i < deleteWorkerCount; i++) {
             Worker worker = new DeleteWorker(config, fileInfoMapper, fileDeleteQueue);
             workers.add(worker);
             worker.start();
         }
+        // 创建 DownloadWorker 提供下载服务
+        log.info("Creating DownloadWorker");
+        downloadWorker = new DownloadWorker(config, fileInfoMapper);
     }
 
     // 清理同步服务
@@ -105,6 +116,8 @@ public class SyncService {
             workers.get(i).interrupt();
         }
         workers.clear();
+        // 清理失效的 DownloadWorker
+        downloadWorker = null;
         // 清理数据库
         log.info("Cleaning database");
         fileInfoMapper.delete(null);
@@ -131,7 +144,7 @@ public class SyncService {
 
     // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        String relativeParent = com.aurora.drivesyncer.lib.file.Utils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
+        String relativeParent = FileUtils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
         String relativePath = relativeParent + file.getName();
         fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
         log.info("Delete " + relativePath + " from database");

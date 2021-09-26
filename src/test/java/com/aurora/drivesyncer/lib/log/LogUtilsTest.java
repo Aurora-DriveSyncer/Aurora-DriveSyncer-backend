@@ -1,12 +1,12 @@
-package com.aurora.drivesyncer.lib;
+package com.aurora.drivesyncer.lib.log;
 
 import org.junit.jupiter.api.Test;
 
-import static com.aurora.drivesyncer.lib.Utils.formatLog;
-import static com.aurora.drivesyncer.lib.Utils.padStartAndEnd;
+import static com.aurora.drivesyncer.lib.log.LogUtils.formatLog;
+import static com.aurora.drivesyncer.lib.log.LogUtils.padStartAndEnd;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class UtilsTest {
+class LogUtilsTest {
     @Test
     void testPadStartAndEnd() {
         assertEquals("---1234---", padStartAndEnd("1234", 10, '-'));

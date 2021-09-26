@@ -14,17 +14,40 @@ import java.util.List;
 import static com.aurora.drivesyncer.lib.file.FileTestTemplate.readSampleTextFile;
 import static org.junit.jupiter.api.Assertions.*;
 
-class WebDAVClientTest {
-    WebDAVClient webDAVClient = WebDAVTestUtils.webDAVClient;
+public class WebDAVClientTest {
+    // 运行 WebDAV 测试需要用 docker 等方法部署 WebDAV 服务
+    public static WebDAVClient webDAVClient;
+
+    // 不同环境下测试可能使用不同的 WebDAV 服务
+    private static final WebDAVClient[] webDAVClientCandidates = {
+            new WebDAVClient("http://webdav/webdav/", "user", "user"),
+            new WebDAVClient("http://localhost:8888/webdav/", "user", "user")
+    };
+
+    // 如能连接上部署的 WebDAV 测试服务并删除所有文件，返回 true
+    public static boolean initializeServer() {
+        // 尝试备选 webDAVClient 直至成功访问
+        for (WebDAVClient c : webDAVClientCandidates) {
+            try {
+                c.deleteFile(".");
+                if (c.listFiles("/").size() == 0) {
+                    webDAVClient = c;
+                    return true;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        return false;
+    }
 
     @BeforeEach
     public void setup() {
-        Assumptions.assumeTrue(WebDAVTestUtils.initializeServer());
+        Assumptions.assumeTrue(initializeServer());
     }
 
     @AfterEach
     public void teardown() throws IOException {
-        WebDAVTestUtils.initializeServer();
+        initializeServer();
     }
 
     @Test

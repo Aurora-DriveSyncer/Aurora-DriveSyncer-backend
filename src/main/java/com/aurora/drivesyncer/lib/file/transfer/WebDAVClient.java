@@ -13,8 +13,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.aurora.drivesyncer.lib.file.Utils.appendSlashIfMissing;
-import static com.aurora.drivesyncer.lib.file.Utils.removePrependingSlash;
+import static com.aurora.drivesyncer.lib.file.FileUtils.appendSlashIfMissing;
+import static com.aurora.drivesyncer.lib.file.FileUtils.removePrependingSlash;
 
 public class WebDAVClient implements FileTransferClient {
 

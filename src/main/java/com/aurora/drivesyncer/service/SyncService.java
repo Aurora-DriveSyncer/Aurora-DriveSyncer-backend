@@ -104,7 +104,7 @@ public class SyncService {
     }
 
     // 清理同步服务
-    public void close() throws IOException {
+    public void close() {
         log.info("Cleaning SyncService");
         if (config == null) {
             log.info("Skipping cleaning SyncService since config is null");
@@ -125,9 +125,11 @@ public class SyncService {
         log.info("Cleaning files on file server");
         FileTransferClient fileTransferClient
                 = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
-        fileTransferClient.open();
-        fileTransferClient.deleteFile(".");
-        fileTransferClient.close();
+        try {
+            fileTransferClient.open();
+            fileTransferClient.deleteFile(".");
+            fileTransferClient.close();
+        } catch (IOException ignored) {}
     }
 
     // 将发生了添加或更新的本地文件添加至数据库和队列

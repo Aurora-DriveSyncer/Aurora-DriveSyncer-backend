@@ -84,7 +84,7 @@ public class UploadWorker extends Worker {
         InputStream encryptedInputStream = encryptor.encrypt(zippedInputStream);
         // 上传文件
         log.info("Uploading " + fullPath);
-        fileTransferClient.uploadFile(fullPath, encryptedInputStream);
+        fileTransferClient.putFile(fullPath, encryptedInputStream);
         log.info("Finish uploading " + fileInfo.getFullPath());
     }
 }

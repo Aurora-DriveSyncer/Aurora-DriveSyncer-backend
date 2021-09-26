@@ -83,20 +83,20 @@ public class SyncService {
         log.info("Creating 1 FileMonitor");
         Worker fileMonitor = new FileMonitor(config.getLocalPath(), this);
         workers.add(fileMonitor);
-        fileMonitor.start();
+        fileMonitor.start(1);
         // 创建 UploadWorker 线程
         log.info("Creating " + uploadWorkerCount + " UploadWorker" + LogUtils.prependingS(uploadWorkerCount));
         for (int i = 0; i < uploadWorkerCount; i++) {
             Worker worker = new UploadWorker(config, fileInfoMapper, fileUploadQueue);
             workers.add(worker);
-            worker.start();
+            worker.start(i);
         }
         // 创建 DeleteWorker 线程
         log.info("Creating " + deleteWorkerCount + " DeleteWorker" + LogUtils.prependingS(deleteWorkerCount));
         for (int i = 0; i < deleteWorkerCount; i++) {
             Worker worker = new DeleteWorker(config, fileInfoMapper, fileDeleteQueue);
             workers.add(worker);
-            worker.start();
+            worker.start(i);
         }
         // 创建 DownloadWorker 提供下载服务
         log.info("Creating DownloadWorker");

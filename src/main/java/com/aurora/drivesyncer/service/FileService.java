@@ -1,7 +1,9 @@
 package com.aurora.drivesyncer.service;
 
 import com.aurora.drivesyncer.entity.FileInfo;
+import com.aurora.drivesyncer.lib.file.transfer.LocalStorageClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
+import com.aurora.drivesyncer.worker.DownloadWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +27,12 @@ public class FileService {
 
     public byte[] getFileContent(String path) throws IOException {
         return syncService.getDownloadWorker().downloadFile(path);
+    }
+
+    public void restoreDrive(String path) throws IOException {
+        LocalStorageClient localStorageClient = new LocalStorageClient(path);
+        localStorageClient.testConnection();
+        DownloadWorker downloadWorker = new DownloadWorker(syncService.getConfig(), fileInfoMapper, localStorageClient);
+        downloadWorker.start(1);
     }
 }

@@ -56,7 +56,7 @@ class ApacheCommonFTPClientTest {
     @Test
     public void downloadFile() throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ftpClient.downloadFile("/data/foobar.txt",byteArrayOutputStream);
+        ftpClient.getFile("/data/foobar.txt",byteArrayOutputStream);
         assertTrue(byteArrayOutputStream.size() > 0);
         assertEquals("abcdef 1234567890", byteArrayOutputStream.toString());
     }
@@ -65,7 +65,7 @@ class ApacheCommonFTPClientTest {
     public void uploadFile() throws  IOException {
 
         File file = readSampleTextFile();
-        ftpClient.uploadFile("/buz.txt",file);
+        ftpClient.putFile("/buz.txt",file);
         assertTrue(fakeFtpServer.getFileSystem().exists("/buz.txt"));
     }
 }

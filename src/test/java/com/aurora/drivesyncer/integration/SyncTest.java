@@ -8,6 +8,7 @@ import com.aurora.drivesyncer.mapper.FileInfoMapper;
 import com.aurora.drivesyncer.web.ConfigController;
 import com.aurora.drivesyncer.web.FileController;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.aurora.drivesyncer.lib.log.LogUtils.formatLog;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 public class SyncTest extends FileTestTemplate {
@@ -62,7 +64,7 @@ public class SyncTest extends FileTestTemplate {
     }
 
     @Test
-    void integrationSyncTest() throws IOException {
+    void integrationSyncTest() throws IOException, InterruptedException {
         // 同步配置，开始同步
         log.info("START FIRST SYNCING");
         Config config = new Config("http://localhost:8888/webdav/",
@@ -74,11 +76,14 @@ public class SyncTest extends FileTestTemplate {
         waitAllSynced();
         log.info(formatLog("FINISH FIRST SYNCING"));
 
-        log.info(formatLog("START SYNCING TEXT FILE"));
+        // 监听文件，开始同步
+        log.info(formatLog("START SYNCING NEW FILE"));
         File file = createTempBinaryFile(1024 * 1024);
         waitAllSynced();
-        log.info(formatLog("FINISH SYNCING TEXT FILE"));
+        log.info(formatLog("FINISH SYNCING NEW FILE"));
 
+        // 下载文件
+        log.info(formatLog("START DOWNLOADING FILE"));
         String[] fileList = {
                 "pom.xml",
                 "src/main/resources/application.yaml",
@@ -90,6 +95,24 @@ public class SyncTest extends FileTestTemplate {
             fileController.downloadFile(path, response);
             log.info(String.format("%s is the guessed Content-Type of %s", response.getContentType(), path));
         }
+        log.info(formatLog("FINISH DOWNLOADING FILE"));
+
+        // 恢复文件
+        String restoreDest = "../aurora-restore/";
+        log.info(formatLog("START RESTORING FILE TO " + restoreDest));
+        fileController.restoreDrive(restoreDest);
+        long originSize = FileUtils.sizeOfDirectory(new File("src"));
+        for (int timeout = 0; timeout <= 50; timeout++) {
+            Thread.sleep(2000);
+            if (FileUtils.sizeOfDirectory(new File(restoreDest + "src")) == originSize) {
+                break;
+            }
+            assertNotEquals(50, timeout);
+            log.info(formatLog("WAITING FOR " + restoreDest + " REACHES ORIGIN'S SIZE"));
+        }
+        log.info(formatLog("FINISH RESTORING FILE"));
+        FileUtils.deleteDirectory(new File(restoreDest));
+
 //        log.info(formatLog("START SYNCING SOFT LINKS"));
 //        createSoftLink(textFile);
 //        waitAllSynced();

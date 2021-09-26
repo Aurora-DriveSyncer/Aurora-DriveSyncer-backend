@@ -11,32 +11,50 @@ import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
 
 import java.io.*;
+import java.util.List;
 
-import static com.aurora.drivesyncer.lib.file.FileUtils.appendSlashIfMissing;
 import static com.aurora.drivesyncer.lib.file.FileUtils.formatPath;
 
-// 消费者，从 fileUploadQueue 中取出等待上传的文件，然后进行上传
+// DownloadWorker 负责下载和还原
+// 下载：通过调用 downloadFile，将 sourceClient 的文件解密、解压后作为 HTTP 报文返回
+// 还原：通过调用 downloadFile，将 sourceClient 的文件解密、解压后传输到 destinationClient
 public class DownloadWorker extends Worker {
     Config config;
 
     Compressor compressor;
     Encryptor encryptor;
-    FileTransferClient fileTransferClient;
+    FileTransferClient sourceClient, destinationClient;
 
     FileInfoMapper fileInfoMapper;
 
     public DownloadWorker(Config config, FileInfoMapper fileInfoMapper) {
+        this(config, fileInfoMapper, null);
+    }
+
+    public DownloadWorker(Config config, FileInfoMapper fileInfoMapper, FileTransferClient destinationClient) {
         this.config = config;
         this.fileInfoMapper = fileInfoMapper;
 
         this.compressor = new GzipCompressor();
         this.encryptor = new AuroraEncryptor(config.getFilePassword());
-        this.fileTransferClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
+        this.sourceClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
+        this.destinationClient = destinationClient;
     }
 
+    // run 函数为还原文件
     @Override
     public void run() {
-        // todo Finish uploading src/main/resources///schema.sql
+        List<FileInfo> fileList = fileInfoMapper.selectList(null);
+        for (FileInfo fileInfo: fileList) {
+            try {
+                // 下载文件
+                InputStream inputStream = downloadFileToInputStream(fileInfo);
+                // 将下载的文件还原到 destinationClient
+                destinationClient.putFile(fileInfo.getFullPath(), inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public byte[] downloadFile(String path) throws IOException {
@@ -45,22 +63,25 @@ public class DownloadWorker extends Worker {
         String parent = formatPath(file.getParent());
         FileInfo fileInfo = fileInfoMapper.selectByParentAndName(parent, name);
         if (fileInfo == null) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException(path);
         }
         return downloadFile(fileInfo);
     }
 
     public byte[] downloadFile(FileInfo fileInfo) throws IOException {
+        return downloadFileToInputStream(fileInfo).readAllBytes();
+    }
+
+    public InputStream downloadFileToInputStream(FileInfo fileInfo) throws IOException {
         String fullPath = fileInfo.getFullPath();
         log.info("Downloading " + fullPath);
         // 下载文件
-        byte[] data = fileTransferClient.downloadFileToByteArray(fullPath);
+        byte[] data = sourceClient.getFileToByteArray(fullPath);
         // 解密，解压
-        log.info("Decrypting and extracting " + fullPath);
         InputStream inputStream = new ByteArrayInputStream(data);
         InputStream decryptedInputStream = encryptor.decrypt(inputStream);
         InputStream extractedInputStream = compressor.extract(decryptedInputStream);
-        return extractedInputStream.readAllBytes();
+        return extractedInputStream;
     }
 
 }

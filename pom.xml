@@ -14,7 +14,7 @@
     <name>Aurora-DriveSyncer-backend</name>
     <description>Aurora-DriveSyncer-backend</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>16</java.version>
         <swagger2.version>2.9.2</swagger2.version>
     </properties>
     <dependencies>

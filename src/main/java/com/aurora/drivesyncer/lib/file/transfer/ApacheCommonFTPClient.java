@@ -65,14 +65,14 @@ public class ApacheCommonFTPClient implements FileTransferClient {
                 .collect(Collectors.toList());
     }
 
-    public void uploadFile(String path, InputStream inputStream) throws IOException {
+    public void putFile(String path, InputStream inputStream) throws IOException {
         ftp.enterLocalPassiveMode();
         if (!ftp.storeFile(path, inputStream)) {
             throw new IOException();
         }
     }
 
-    public void downloadFile(String path, OutputStream outputStream) throws IOException {
+    public void getFile(String path, OutputStream outputStream) throws IOException {
         ftp.enterLocalPassiveMode();
         if (!ftp.retrieveFile(path, outputStream)) {
             throw new IOException();

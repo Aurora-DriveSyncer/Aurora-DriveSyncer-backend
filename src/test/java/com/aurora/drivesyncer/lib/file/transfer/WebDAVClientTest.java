@@ -59,9 +59,9 @@ public class WebDAVClientTest {
         webDAVClient.createDirectory("test");
         // upload to root
         File file = readSampleTextFile();
-        webDAVClient.uploadFile("pom.xml", file);
+        webDAVClient.putFile("pom.xml", file);
         // upload to subdirectory
-        webDAVClient.uploadFile("test/pom.xml", file);
+        webDAVClient.putFile("test/pom.xml", file);
         // list
         fileList = webDAVClient.listFiles(".");
         assertEquals(2, fileList.size());
@@ -69,10 +69,10 @@ public class WebDAVClientTest {
         assertTrue(fileList.contains("pom.xml"));
         // download
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        webDAVClient.downloadFile("pom.xml", baos);
+        webDAVClient.getFile("pom.xml", baos);
         assertArrayEquals(FileUtils.readFileToByteArray(file), baos.toByteArray());
         baos = new ByteArrayOutputStream();
-        webDAVClient.downloadFile("test/pom.xml", baos);
+        webDAVClient.getFile("test/pom.xml", baos);
         assertArrayEquals(FileUtils.readFileToByteArray(file), baos.toByteArray());
         // delete
         webDAVClient.deleteFile("pom.xml");

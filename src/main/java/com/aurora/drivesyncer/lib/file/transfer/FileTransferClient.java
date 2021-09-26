@@ -13,21 +13,21 @@ public interface FileTransferClient extends Closeable {
 
     List<String> listFiles(String path) throws IOException;
 
-    void uploadFile(String path, InputStream inputStream) throws IOException;
+    void putFile(String path, InputStream inputStream) throws IOException;
 
-    default void uploadFile(String path, File file) throws IOException {
-        uploadFile(path, new FileInputStream(file));
+    default void putFile(String path, File file) throws IOException {
+        putFile(path, new FileInputStream(file));
     }
 
-    void downloadFile(String path, OutputStream outputStream) throws IOException;
+    void getFile(String path, OutputStream outputStream) throws IOException;
 
-    default void downloadFile(String path, File file) throws IOException {
-        downloadFile(path, new FileOutputStream(file));
+    default void getFile(String path, File file) throws IOException {
+        getFile(path, new FileOutputStream(file));
     }
 
-    default byte[] downloadFileToByteArray(String path) throws IOException {
+    default byte[] getFileToByteArray(String path) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        downloadFile(path, baos);
+        getFile(path, baos);
         return baos.toByteArray();
     }
 

@@ -11,8 +11,16 @@ public abstract class Worker implements Runnable {
     abstract public void run();
 
     public void start() {
+        start(getClass().getSimpleName());
+    }
+
+    public void start(long id) {
+        start(getClass().getSimpleName() + "-" + id);
+    }
+
+    public void start(String threadName) {
         if (thread == null) {
-            thread = new Thread(this);
+            thread = new Thread(this, threadName);
             thread.start();
         }
     }

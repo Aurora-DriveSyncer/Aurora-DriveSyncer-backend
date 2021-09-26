@@ -62,12 +62,12 @@ public class WebDAVClient implements FileTransferClient {
                 .collect(Collectors.toList());
     }
 
-    public void uploadFile(String path, InputStream inputStream) throws IOException {
+    public void putFile(String path, InputStream inputStream) throws IOException {
         createDirectoryRecursively(new File(path).getParent());
         sardine.put(pathToURL(path), inputStream);
     }
 
-    public void downloadFile(String path, OutputStream outputStream) throws IOException {
+    public void getFile(String path, OutputStream outputStream) throws IOException {
         InputStream inputStream = sardine.get(pathToURL(path));
         byte[] data = inputStream.readAllBytes();
         inputStream.close();
@@ -80,7 +80,7 @@ public class WebDAVClient implements FileTransferClient {
     }
 
     public void createDirectory(String path) throws IOException {
-        log.info("Creating directory " + path);
+        log.info("Creating directory " + path + " on WebDAV");
         sardine.createDirectory(pathToURL(path));
     }
 

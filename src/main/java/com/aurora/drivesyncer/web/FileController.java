@@ -22,19 +22,21 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
+    // 获取该文件夹下文件的列表
     @GetMapping(value = "/list/")
     public List<FileInfo> getFileList(@RequestParam String path) {
         return fileService.getFileListByPath(path);
     }
 
+    // 获取正在同步的文件列表
     @GetMapping(value = "/syncing/")
     public List<FileInfo> getSyncingList() {
         return fileService.getSyncingList();
     }
 
+    // 下载文件，如果不存在则返回 404
     @GetMapping(value = "/download/")
     public void downloadFile(@RequestParam String path, HttpServletResponse response) throws IOException {
-        // 下载文件，如果不存在则返回 404
         byte[] data;
         try {
             data = fileService.getFileContent(path);
@@ -51,8 +53,9 @@ public class FileController {
         response.setContentType(URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(data)));
     }
 
+    // 将云盘的文件还原到的本地
     @GetMapping(value = "/restore/")
-    public void restoreFile(@RequestParam String path) {
-        // todo
+    public void restoreDrive(@RequestParam String path) throws IOException {
+        fileService.restoreDrive(path);
     }
 }

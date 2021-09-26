@@ -17,6 +17,10 @@ public class FileService {
     @Autowired
     private SyncService syncService;
 
+    public List<FileInfo> getFileList() {
+        return fileInfoMapper.selectList(null);
+    }
+
     public List<FileInfo> getFileListByPath(String path) {
         return fileInfoMapper.selectByParent(path);
     }

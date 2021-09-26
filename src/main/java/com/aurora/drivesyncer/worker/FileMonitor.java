@@ -53,9 +53,15 @@ public class FileMonitor extends Worker {
 
     public void fullScan() throws IOException {
         log.info("Start scanning " + root.getPath());
-        Collection<File> files = FileUtils.listFiles(root, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        Collection<File> files = FileUtils.listFilesAndDirs(root, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file: files) {
-            syncService.addLocalFile(file);
+            if (file.getParent() == null) {
+                continue;
+            } else if (file.isDirectory()) {
+                syncService.addLocalDirectory(file);
+            } else {
+                syncService.addLocalFile(file);
+            }
         }
         log.info(String.format("Finish scanning %s (%d file%s found)",
                 root.getPath(), files.size(), LogUtils.prependingS(files.size())));

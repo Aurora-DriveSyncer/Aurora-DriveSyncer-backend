@@ -28,6 +28,12 @@ public class FileController {
         return fileService.getFileListByPath(path);
     }
 
+    // 获取所有文件
+    @GetMapping(value = "/list/all/")
+    public List<FileInfo> getAllFile() {
+        return fileService.getFileList();
+    }
+
     // 获取正在同步的文件列表
     @GetMapping(value = "/syncing/")
     public List<FileInfo> getSyncingList() {

@@ -9,6 +9,7 @@ import com.aurora.drivesyncer.lib.file.encrypt.Encryptor;
 import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.mapper.FileInfoMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import java.io.*;
 import java.util.List;
@@ -44,7 +45,9 @@ public class DownloadWorker extends Worker {
     // run 函数为还原文件
     @Override
     public void run() {
-        List<FileInfo> fileList = fileInfoMapper.selectList(null);
+        QueryWrapper<FileInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_directory", 0);
+        List<FileInfo> fileList = fileInfoMapper.selectList(wrapper);
         for (FileInfo fileInfo: fileList) {
             try {
                 // 下载文件
@@ -64,6 +67,8 @@ public class DownloadWorker extends Worker {
         FileInfo fileInfo = fileInfoMapper.selectByParentAndName(parent, name);
         if (fileInfo == null) {
             throw new FileNotFoundException(path);
+        } else if (fileInfo.getDirectory()) {
+            throw new IOException(path + " is a directory");
         }
         return downloadFile(fileInfo);
     }

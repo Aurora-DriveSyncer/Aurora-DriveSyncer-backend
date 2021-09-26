@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static com.aurora.drivesyncer.lib.file.FileUtils.appendSlashIfMissing;
+
 @Service
 public class SyncService {
     @Autowired
@@ -144,13 +146,35 @@ public class SyncService {
         fileUploadQueue.add(fileInfo.getId());
     }
 
+    // 将发生了添加或更新的本地文件夹添加至数据库
+    public void addLocalDirectory(File file) throws IOException {
+        // 存入数据库的是相对路径
+        FileInfo fileInfo = new FileInfo(file, config.getLocalPath());
+        fileInfo.setStatus(FileInfo.SyncStatus.Synced);
+        fileInfoMapper.insertOrUpdateByParentAndName(fileInfo);
+        // log 也使用相对路径
+        String relativePath = fileInfo.getFullPath();
+        log.info("Update " + relativePath + " to database");
+    }
+
     // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        String relativeParent = FileUtils.getRelativePath(file.getParent(), config.getLocalPath()) + "/";
+        String relativeParent = appendSlashIfMissing(
+                FileUtils.getRelativePath(file.getParent(), config.getLocalPath()));
         String relativePath = relativeParent + file.getName();
         fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
         log.info("Delete " + relativePath + " from database");
         fileDeleteQueue.add(relativePath);
+    }
+
+    // 将发生了删除的本地文件夹从数据库删除
+    public void deleteLocalDirectory(File file) throws IOException {
+        String relativeParent = appendSlashIfMissing(
+            FileUtils.getRelativePath(file.getParent(), config.getLocalPath()));
+        relativeParent = appendSlashIfMissing(relativeParent);
+        String relativePath = relativeParent + file.getName();
+        fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
+        log.info("Delete " + relativePath + " from database");
     }
 
     public void createBlockingQueues() {

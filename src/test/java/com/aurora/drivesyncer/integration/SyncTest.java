@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.aurora.drivesyncer.lib.log.LogUtils.formatLog;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class SyncTest extends FileTestTemplate {
@@ -112,6 +112,16 @@ public class SyncTest extends FileTestTemplate {
         }
         log.info(formatLog("FINISH RESTORING FILE"));
         FileUtils.deleteDirectory(new File(restoreDest));
+
+        // 删除文件
+        log.info(formatLog("START REMOVING DIRECTORY " + testDirectory));
+        FileUtils.deleteDirectory(new File(testDirectory));
+        Thread.sleep(2000);
+        QueryWrapper<FileInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("filename", "aurora-tests-temp");
+        assertEquals(0, fileInfoMapper.selectCount(wrapper));
+        assertEquals(0, fileInfoMapper.selectByParent("aurora-tests-temp").size());
+        log.info(formatLog("FINISH REMOVING DIRECTORY" + testDirectory));
 
 //        log.info(formatLog("START SYNCING SOFT LINKS"));
 //        createSoftLink(textFile);

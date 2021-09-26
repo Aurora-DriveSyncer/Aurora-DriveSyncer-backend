@@ -45,6 +45,6 @@ public class DeleteWorker extends Worker {
 
     public void deleteFile(String filepath) throws IOException {
         fileTransferClient.deleteFile(filepath);
-        log.info("Deleting " + filepath + "from FTP Server");
+        log.info("Deleting " + filepath + " from FTP Server");
     }
 }

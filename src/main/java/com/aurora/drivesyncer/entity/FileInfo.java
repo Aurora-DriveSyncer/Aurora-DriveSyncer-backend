@@ -58,9 +58,6 @@ public class FileInfo {
 
     public FileInfo(File file, String base) throws IOException {
         this.filename = file.getName();
-        if (filename.equals("pom.xml")) {
-            System.out.println(2333);
-        }
         String relativePath = FileUtils.getRelativePath(file.getParent(), base);
         // setPath 会将路径名规范化
         this.setPath(relativePath);
@@ -70,7 +67,9 @@ public class FileInfo {
         this.lastModifiedTime = toLocalTime(attr.lastModifiedTime());
         this.isDirectory = file.isDirectory();
         this.size = file.length();
-        this.hash = hashAlgorithm.hash(file);
+        if (!this.isDirectory) {
+            this.hash = hashAlgorithm.hash(file);
+        }
     }
 
     public Integer getId() {

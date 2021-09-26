@@ -67,18 +67,33 @@ public class FileListener extends FileAlterationListenerAdaptor {
     @Override
     public void onDirectoryChange(File directory) {
         log.info(String.format("%s dir change...", directory.getPath()));
+        try {
+            syncService.addLocalDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onDirectoryChange(directory);
     }
 
     @Override
     public void onDirectoryCreate(File directory) {
         log.info(String.format("%s dir create...", directory.getPath()));
+        try {
+            syncService.addLocalDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onDirectoryCreate(directory);
     }
 
     @Override
     public void onDirectoryDelete(File directory) {
         log.info(String.format("%s dir delete...", directory.getPath()));
+        try {
+            syncService.deleteLocalDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onDirectoryCreate(directory);
     }
 }

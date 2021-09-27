@@ -114,14 +114,17 @@ public class SyncTest extends FileTestTemplate {
         FileUtils.deleteDirectory(new File(restoreDest));
 
         // 删除文件
-        log.info(formatLog("START REMOVING DIRECTORY " + testDirectory));
-        FileUtils.deleteDirectory(new File(testDirectory));
-        Thread.sleep(2000);
+        File t = new File(testDirectory);
+        log.info(formatLog("START REMOVING DIRECTORY " + t.getName()));
+        assertTrue(t.exists());
+        FileUtils.deleteDirectory(t);
+        Thread.sleep(10000);
+        assertFalse(t.exists());
         QueryWrapper<FileInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("filename", "aurora-tests-temp");
+        wrapper.eq("filename", t.getName());
         assertEquals(0, fileInfoMapper.selectCount(wrapper));
-        assertEquals(0, fileInfoMapper.selectByParent("aurora-tests-temp").size());
-        log.info(formatLog("FINISH REMOVING DIRECTORY" + testDirectory));
+        assertEquals(0, fileInfoMapper.selectByParent(testDirectory).size());
+        log.info(formatLog("FINISH REMOVING DIRECTORY" + t.getName()));
 
 //        log.info(formatLog("START SYNCING SOFT LINKS"));
 //        createSoftLink(textFile);

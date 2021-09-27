@@ -2,7 +2,7 @@ package com.aurora.drivesyncer.lib.log;
 
 public class LogUtils {
     // 计算是否需要加复数 s
-    public static String prependingS(int count) {
+    public static String prependS(int count) {
         return count != 1 ? "s" : "";
     }
 

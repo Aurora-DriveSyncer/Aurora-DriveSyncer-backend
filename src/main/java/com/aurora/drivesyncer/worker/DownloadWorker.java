@@ -14,7 +14,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.io.*;
 import java.util.List;
 
-import static com.aurora.drivesyncer.lib.file.FileUtils.formatPath;
+import static com.aurora.drivesyncer.lib.file.FileUtils.formatDirPath;
+import static com.aurora.drivesyncer.lib.log.LogUtils.prependS;
 
 // DownloadWorker 负责下载和还原
 // 下载：通过调用 downloadFile，将 sourceClient 的文件解密、解压后作为 HTTP 报文返回
@@ -58,12 +59,13 @@ public class DownloadWorker extends Worker {
                 e.printStackTrace();
             }
         }
+        log.info(String.format("Restore success with %d file%s", fileList.size(), prependS(fileList.size())));
     }
 
     public byte[] downloadFile(String path) throws IOException {
         File file = new File(path);
         String name = file.getName();
-        String parent = formatPath(file.getParent());
+        String parent = formatDirPath(file.getParent());
         FileInfo fileInfo = fileInfoMapper.selectByParentAndName(parent, name);
         if (fileInfo == null) {
             throw new FileNotFoundException(path);

@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static com.aurora.drivesyncer.lib.datetime.DateTimeUtils.toLocalTime;
-import static com.aurora.drivesyncer.lib.file.FileUtils.formatPath;
+import static com.aurora.drivesyncer.lib.file.FileUtils.formatDirPath;
 
 public class FileInfo {
     public enum SyncStatus
@@ -95,7 +95,7 @@ public class FileInfo {
     // 保证 parent 不以 / 开头
     // 且保证 parent 不为 "" 时，以 / 结尾
     public void setPath(String path) {
-        this.path = formatPath(path);
+        this.path = formatDirPath(path);
     }
 
     public String getFullPath() {return path + filename;}

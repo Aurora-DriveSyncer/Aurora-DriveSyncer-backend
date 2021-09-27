@@ -14,15 +14,20 @@ public class FileUtils {
 
     // 如果字符串以 / 开头，则删去一个 /
     // 用以保证（相对路径）字符串不以 / 开头
-    public static String removePrependingSlash(String path) {
+    public static String removeFrontSlash(String path) {
         return path == null ? "" :
                 path.startsWith("/") ? path.substring(1) :
                         path;
     }
 
-    // 将相对文件夹路径格式化
-    public static String formatPath(String path) {
-        return removePrependingSlash(appendSlashIfMissing(path));
+    // 将文件的相对路径格式化
+    public static String formatFilePath(String path) {
+        return removeFrontSlash(path);
+    }
+
+    // 将文件夹的相对路径格式化
+    public static String formatDirPath(String path) {
+        return removeFrontSlash(appendSlashIfMissing(path));
     }
 
     // 获取两个路径（路径不需要存在）的相对路径

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.aurora.drivesyncer.lib.file.FileUtils.appendSlashIfMissing;
-import static com.aurora.drivesyncer.lib.file.FileUtils.removePrependingSlash;
+import static com.aurora.drivesyncer.lib.file.FileUtils.formatFilePath;
 
 public class WebDAVClient implements FileTransferClient {
 
@@ -49,7 +49,7 @@ public class WebDAVClient implements FileTransferClient {
     }
 
     private String pathToURL(String path) {
-        return this.url + removePrependingSlash(path);
+        return this.url + formatFilePath(path);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.aurora.drivesyncer.service;
 
 import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
-import com.aurora.drivesyncer.lib.file.FileUtils;
 import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
 import com.aurora.drivesyncer.lib.log.LogUtils;
@@ -22,7 +21,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.aurora.drivesyncer.lib.file.FileUtils.appendSlashIfMissing;
+import static com.aurora.drivesyncer.lib.file.FileUtils.formatDirPath;
+import static com.aurora.drivesyncer.lib.file.FileUtils.getRelativePath;
 
 @Service
 public class SyncService {
@@ -87,14 +87,14 @@ public class SyncService {
         workers.add(fileMonitor);
         fileMonitor.start(1);
         // 创建 UploadWorker 线程
-        log.info("Creating " + uploadWorkerCount + " UploadWorker" + LogUtils.prependingS(uploadWorkerCount));
+        log.info("Creating " + uploadWorkerCount + " UploadWorker" + LogUtils.prependS(uploadWorkerCount));
         for (int i = 0; i < uploadWorkerCount; i++) {
             Worker worker = new UploadWorker(config, fileInfoMapper, fileUploadQueue);
             workers.add(worker);
             worker.start(i);
         }
         // 创建 DeleteWorker 线程
-        log.info("Creating " + deleteWorkerCount + " DeleteWorker" + LogUtils.prependingS(deleteWorkerCount));
+        log.info("Creating " + deleteWorkerCount + " DeleteWorker" + LogUtils.prependS(deleteWorkerCount));
         for (int i = 0; i < deleteWorkerCount; i++) {
             Worker worker = new DeleteWorker(config, fileInfoMapper, fileDeleteQueue);
             workers.add(worker);
@@ -159,22 +159,25 @@ public class SyncService {
 
     // 将发生了删除的本地文件从数据库删除，并添加至队列
     public void deleteLocalFile(File file) throws IOException {
-        String relativeParent = appendSlashIfMissing(
-                FileUtils.getRelativePath(file.getParent(), config.getLocalPath()));
-        String relativePath = relativeParent + file.getName();
-        fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
-        log.info("Delete " + relativePath + " from database");
-        fileDeleteQueue.add(relativePath);
+        String parent = formatDirPath(getRelativePath(file.getParent(), config.getLocalPath()));
+        String fullPath = parent + file.getName();
+        if (fileInfoMapper.deleteByParentAndName(parent, file.getName()) == 0) {
+            log.warn(String.format("Fail to delete \"%s\" \"%s\" from database", parent, file.getName()));
+        } else {
+            log.info("Delete " + fullPath + " from database");
+        }
+        fileDeleteQueue.add(fullPath);
     }
 
     // 将发生了删除的本地文件夹从数据库删除
     public void deleteLocalDirectory(File file) throws IOException {
-        String relativeParent = appendSlashIfMissing(
-            FileUtils.getRelativePath(file.getParent(), config.getLocalPath()));
-        relativeParent = appendSlashIfMissing(relativeParent);
-        String relativePath = relativeParent + file.getName();
-        fileInfoMapper.deleteByParentAndName(relativeParent, file.getName());
-        log.info("Delete " + relativePath + " from database");
+        String parent = formatDirPath(getRelativePath(file.getParent(), config.getLocalPath()));
+        String fullPath = parent + file.getName();
+        if (fileInfoMapper.deleteByParentAndName(parent, file.getName()) == 0) {
+            log.warn(String.format("Fail to delete dir \"%s\" \"%s\" from database", parent, file.getName()));
+        } else {
+            log.info("Delete " + fullPath + " from database");
+        }
     }
 
     public void createBlockingQueues() {

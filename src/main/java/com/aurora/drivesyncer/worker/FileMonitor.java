@@ -64,7 +64,7 @@ public class FileMonitor extends Worker {
             }
         }
         log.info(String.format("Finish scanning %s (%d file%s found)",
-                root.getPath(), files.size(), LogUtils.prependingS(files.size())));
+                root.getPath(), files.size(), LogUtils.prependS(files.size())));
     }
 
     public void addFileListener() throws Exception {

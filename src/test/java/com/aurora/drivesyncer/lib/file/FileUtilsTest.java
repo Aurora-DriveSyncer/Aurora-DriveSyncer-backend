@@ -18,22 +18,22 @@ public class FileUtilsTest extends FileTestTemplate {
 
     @Test
     void testRemovePrependingSlash() {
-        assertEquals("123", removePrependingSlash("123"));
-        assertEquals("123/", removePrependingSlash("123/"));
-        assertEquals("123", removePrependingSlash("/123"));
-        assertEquals("123/", removePrependingSlash("/123/"));
+        assertEquals("123", removeFrontSlash("123"));
+        assertEquals("123/", removeFrontSlash("123/"));
+        assertEquals("123", removeFrontSlash("/123"));
+        assertEquals("123/", removeFrontSlash("/123/"));
 
-        assertEquals("", removePrependingSlash("/"));
+        assertEquals("", removeFrontSlash("/"));
     }
 
     @Test
     void testFormatPath() {
-        assertEquals("123/", formatPath("123"));
-        assertEquals("123/", formatPath("123/"));
-        assertEquals("123/", formatPath("/123"));
-        assertEquals("123/", formatPath("/123/"));
+        assertEquals("123/", formatDirPath("123"));
+        assertEquals("123/", formatDirPath("123/"));
+        assertEquals("123/", formatDirPath("/123"));
+        assertEquals("123/", formatDirPath("/123/"));
 
-        assertEquals("", formatPath("/"));
+        assertEquals("", formatDirPath("/"));
     }
 
     @Test

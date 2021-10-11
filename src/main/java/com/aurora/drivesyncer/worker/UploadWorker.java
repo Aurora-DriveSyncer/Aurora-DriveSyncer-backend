@@ -4,7 +4,7 @@ import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.lib.file.compress.Compressor;
 import com.aurora.drivesyncer.lib.file.compress.GzipCompressor;
-import com.aurora.drivesyncer.lib.file.encrypt.AuroraEncryptor;
+import com.aurora.drivesyncer.lib.file.encrypt.AES128Encryptor;
 import com.aurora.drivesyncer.lib.file.encrypt.Encryptor;
 import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
@@ -32,7 +32,7 @@ public class UploadWorker extends Worker {
         this.fileInfoMapper = fileInfoMapper;
         this.fileUploadQueue = fileUploadQueue;
         this.compressor = new GzipCompressor();
-        this.encryptor = new AuroraEncryptor(config.getFilePassword());
+        this.encryptor = new AES128Encryptor(config.getFilePassword());
         this.fileTransferClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
     }
 

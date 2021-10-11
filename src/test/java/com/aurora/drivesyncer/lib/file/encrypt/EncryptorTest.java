@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class EncryptorTest extends FileTestTemplate {
     public static final Encryptor[] encryptors = new Encryptor[]{
-            new AuroraEncryptor("aurora-drivesyncer")
+            new AuroraEncryptor("aurora-drivesyncer"),
+            new AES128Encryptor("aurora-drivesyncer"),
     };
 
     public void testEncryptorsOnFile(File origin) throws IOException {

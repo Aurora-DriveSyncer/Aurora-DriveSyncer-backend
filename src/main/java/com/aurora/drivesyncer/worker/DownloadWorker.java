@@ -4,7 +4,7 @@ import com.aurora.drivesyncer.entity.Config;
 import com.aurora.drivesyncer.entity.FileInfo;
 import com.aurora.drivesyncer.lib.file.compress.Compressor;
 import com.aurora.drivesyncer.lib.file.compress.GzipCompressor;
-import com.aurora.drivesyncer.lib.file.encrypt.AuroraEncryptor;
+import com.aurora.drivesyncer.lib.file.encrypt.AES128Encryptor;
 import com.aurora.drivesyncer.lib.file.encrypt.Encryptor;
 import com.aurora.drivesyncer.lib.file.transfer.FileTransferClient;
 import com.aurora.drivesyncer.lib.file.transfer.WebDAVClient;
@@ -38,7 +38,7 @@ public class DownloadWorker extends Worker {
         this.fileInfoMapper = fileInfoMapper;
 
         this.compressor = new GzipCompressor();
-        this.encryptor = new AuroraEncryptor(config.getFilePassword());
+        this.encryptor = new AES128Encryptor(config.getFilePassword());
         this.sourceClient = new WebDAVClient(config.getUrl(), config.getUsername(), config.getPassword());
         this.destinationClient = destinationClient;
     }
@@ -49,7 +49,7 @@ public class DownloadWorker extends Worker {
         QueryWrapper<FileInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("is_directory", 0);
         List<FileInfo> fileList = fileInfoMapper.selectList(wrapper);
-        for (FileInfo fileInfo: fileList) {
+        for (FileInfo fileInfo : fileList) {
             try {
                 // 下载文件
                 InputStream inputStream = downloadFileToInputStream(fileInfo);
